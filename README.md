@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="web/logo.svg" alt="zellig logo" width="128" height="128" />
+<img src="docs/logo.svg" alt="zellig logo" width="128" height="128" />
 
 # zellig
 
