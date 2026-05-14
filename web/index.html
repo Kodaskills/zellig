@@ -1,0 +1,578 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <script>!function(){var t=localStorage.getItem('theme')||'system';document.documentElement.setAttribute('data-theme',t==='dark'||t==='system'&&matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light')}()</script>
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NX4PHTVQ');</script>
+  <!-- End Google Tag Manager -->
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Zellig — translate anything, locally</title>
+  <meta name="description" content="A tiny Rust CLI that speaks 200 languages — on-device with NLLB, through a cloud translation service, or via your favourite LLM." />
+  <link rel="icon" href="logo.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NX4PHTVQ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<!-- ────────────── nav ────────────── -->
+<nav class="nav">
+  <div class="nav__inner">
+    <a class="brand" href="#top">
+      <span class="brand__mark">
+        <svg viewBox="0 0 867 913" aria-hidden="true">
+          <path d="M1.82,472.741l0,-313.328l148.419,-159.413l714.608,0l0,274.849l-401.28,417.771l-159.413,0l445.256,-456.25l0,-126.431l-544.202,0l-87.952,93.449l148.419,0l-263.855,269.352" />
+          <path d="M557.016,219.88l-153.916,0l-401.28,412.274l0,280.346l709.111,0l153.916,-164.91l0,-307.831l-258.358,263.855l148.419,0l-98.946,98.946l-544.202,0l0,-131.928l445.256,-450.753Z" />
+        </svg>
+      </span>
+      <span class="brand__name">zellig</span>
+      <span class="brand__ver">v0.1.0</span>
+    </a>
+    <div class="nav__links">
+      <a href="#features">Features</a>
+      <a href="#backends">Backends</a>
+      <a href="#modes">Modes</a>
+      <a href="#roadmap">Roadmap</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <div class="nav__spacer"></div>
+    <div class="nav__cta">
+      <button class="theme-btn" id="theme-btn" data-mode="system" aria-label="Theme: system" title="Theme: system">
+        <svg class="theme-icon theme-icon--system" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="2" y="3" width="16" height="11" rx="2"/><path d="M7 18h6M10 14v4"/></svg>
+        <svg class="theme-icon theme-icon--light" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10" cy="10" r="3.5"/><path d="M10 2v1.5M10 16.5V18M2 10h1.5M16.5 10H18M4.1 4.1l1.06 1.06M14.85 14.85l1.06 1.06M4.1 15.9l1.06-1.06M14.85 5.15l1.06-1.06"/></svg>
+        <svg class="theme-icon theme-icon--dark" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M17.5 11.5A7.5 7.5 0 1 1 8.5 2.5a5.5 5.5 0 0 0 9 9z"/></svg>
+      </button>
+      <a class="btn btn--ghost" href="https://github.com/kodaskills/zellig" target="_blank" rel="noreferrer">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.1.79-.25.79-.55v-2.1c-3.2.7-3.88-1.36-3.88-1.36-.52-1.33-1.28-1.68-1.28-1.68-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.73-1.54-2.55-.29-5.24-1.27-5.24-5.66 0-1.25.45-2.27 1.18-3.07-.12-.29-.51-1.45.11-3.02 0 0 .97-.31 3.18 1.17a11 11 0 0 1 5.79 0c2.21-1.48 3.18-1.17 3.18-1.17.62 1.57.23 2.73.11 3.02.74.8 1.18 1.82 1.18 3.07 0 4.4-2.69 5.36-5.25 5.65.41.36.77 1.07.77 2.15v3.19c0 .31.21.66.8.55C20.21 21.39 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5Z"/></svg>
+        Star
+      </a>
+      <a class="btn btn--primary" href="#install">
+        Install
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- ────────────── hero ────────────── -->
+<header class="hero hero--stacked" id="top">
+  <div class="hero__bigmark" aria-hidden="true">
+    <svg viewBox="0 0 867 913">
+      <path d="M1.82,472.741l0,-313.328l148.419,-159.413l714.608,0l0,274.849l-401.28,417.771l-159.413,0l445.256,-456.25l0,-126.431l-544.202,0l-87.952,93.449l148.419,0l-263.855,269.352" />
+      <path d="M557.016,219.88l-153.916,0l-401.28,412.274l0,280.346l709.111,0l153.916,-164.91l0,-307.831l-258.358,263.855l148.419,0l-98.946,98.946l-544.202,0l0,-131.928l445.256,-450.753Z" />
+    </svg>
+  </div>
+  <div class="wrap">
+    <div class="hero__grid">
+      <div class="hero__copy">
+        <span class="hero__pill">
+          <span class="dot"></span>
+          <strong>v0.1.0</strong> · open source, MIT · written in Rust
+        </span>
+        <h1 class="h1">Translate <em>anything</em>,<br>right from your terminal.</h1>
+        <p class="lede">Zellig is a tiny Rust CLI that speaks 200 languages — on-device with NLLB, through a cloud translation service, or via your favourite LLM. Strings, files, whole directories. It preserves your formatting and stays out of the way.</p>
+        <div class="install" id="install">
+          <span class="install__prompt">$</span>
+          <span class="install__cmd" id="install-cmd">curl -fsSL https://raw.githubusercontent.com/kodaskills/zellig/main/install.sh | sh</span>
+          <button class="install__copy" id="install-copy-btn">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4.5" y="4.5" width="8" height="9" rx="1.5"/><path d="M9 1.5H3a1.5 1.5 0 0 0-1.5 1.5v7"/></svg>
+            copy
+          </button>
+        </div>
+        <div class="hero__sub">
+          <span>or</span>
+          <code>cargo install zellig</code>
+        </div>
+        <div class="hero__sub">
+          <span>· macOS · Linux · Windows · 8 MB binary · zero runtime dependencies ·</span>
+        </div>
+      </div>
+      <div class="hero__stage">
+        <div class="term" id="terminal">
+          <div class="term__bar">
+            <div class="term__dots">
+              <span class="term__dot"></span><span class="term__dot"></span><span class="term__dot"></span>
+            </div>
+            <div class="term__title" id="term-title">~/projects/site — zellig</div>
+            <div class="term__tabs" id="term-tabs">
+              <button class="term__tab is-active" data-scene="0">text</button>
+              <button class="term__tab" data-scene="1">file</button>
+              <button class="term__tab" data-scene="2">directory</button>
+              <button class="term__tab" data-scene="3">interactive</button>
+            </div>
+          </div>
+          <div class="term__body" id="term-body"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ────────────── tile band ────────────── -->
+<div class="tile-band" id="tile-band">
+  <div class="tile-band__inner" id="tile-band-inner"></div>
+</div>
+
+<!-- ────────────── features ────────────── -->
+<section class="section" id="features">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">What it does</span>
+      <h2 class="h2">Built for the way <em>localization actually happens</em>.</h2>
+      <p class="lede">One small binary that pulls together the three jobs you used to glue together with shell scripts: machine translation, LLMs, and file-format-aware batch processing.</p>
+    </div>
+    <div class="features">
+      <article class="feature">
+        <span class="feature__num">01</span>
+        <h3 class="feature__title">Local, by default</h3>
+        <p class="feature__body">Ship NLLB-200 (600M / 1.3B / 3.3B) right next to your binary. Everything runs on-device — no API keys, no rate limits, no data leaving your machine.</p>
+        <span class="feature__tag">ct2rs · CTranslate2 · cpu · cuda</span>
+      </article>
+      <article class="feature">
+        <span class="feature__num">02</span>
+        <h3 class="feature__title">20+ LLM backends</h3>
+        <p class="feature__body">Plug Zellig into Anthropic, OpenAI, Gemini, xAI, DeepSeek, Groq, Ollama, or any OpenAI-compatible endpoint. Bring your own prompt; cache by default.</p>
+        <span class="feature__tag">openai · anthropic · ollama · …</span>
+      </article>
+      <article class="feature">
+        <span class="feature__num">03</span>
+        <h3 class="feature__title">10 translation services</h3>
+        <p class="feature__body">DeepL, Google, Yandex, Azure, LibreTranslate, Bergamot, Baidu, Youdao, QQ, Lingva — picked at runtime per file, per language, or per glossary.</p>
+        <span class="feature__tag">drop-in · auth via env · rate-aware</span>
+      </article>
+      <article class="feature">
+        <span class="feature__num">04</span>
+        <h3 class="feature__title">Formats it respects</h3>
+        <p class="feature__body">Walks directories, filters by extension, and keeps your structure intact. PO comments, XLIFF metadata, JSON keys, TOML tables, YAML anchors, Markdown blocks.</p>
+        <span class="feature__tag">po · xliff · json · toml · yaml · md</span>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ────────────── formats ────────────── -->
+<section class="section section--tight">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Formats</span>
+      <h2 class="h2">Speaks your <em>file formats</em>, not just your strings.</h2>
+    </div>
+    <div class="formats">
+      <article class="fmt">
+        <span class="fmt__ext">.po</span>
+        <span class="fmt__name">Gettext catalogs</span>
+        <p class="fmt__desc">Comments, plurals, msgctxt, fuzzy flags — preserved. Never overwrites an existing msgstr unless you ask.</p>
+      </article>
+      <article class="fmt">
+        <span class="fmt__ext">.xliff</span>
+        <span class="fmt__name">XLIFF 1.2 &amp; 2.0</span>
+        <p class="fmt__desc">Trans-unit attributes, inline tags, and state machinery survive the round trip.</p>
+      </article>
+      <article class="fmt">
+        <span class="fmt__ext">.json</span>
+        <span class="fmt__name">JSON / i18next</span>
+        <p class="fmt__desc">Nested keys, ICU plurals, interpolation tokens like {{name}} stay verbatim.</p>
+      </article>
+      <article class="fmt">
+        <span class="fmt__ext">.toml</span>
+        <span class="fmt__name">TOML</span>
+        <p class="fmt__desc">Tables, arrays of tables, inline strings — translated values keep their key paths and order.</p>
+      </article>
+      <article class="fmt">
+        <span class="fmt__ext">.yaml</span>
+        <span class="fmt__name">YAML / Rails</span>
+        <p class="fmt__desc">Anchors, aliases, and i18n.yml conventions are honoured; flow style preserved.</p>
+      </article>
+      <article class="fmt">
+        <span class="fmt__ext">.md</span>
+        <span class="fmt__name">Markdown / MDX</span>
+        <p class="fmt__desc">Code fences, links, and front-matter are left alone. Prose gets translated. JSX nodes opt-in.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ────────────── backends ────────────── -->
+<section class="section section--alt" id="backends">
+  <div class="wrap">
+    <div class="section-head section-head--row">
+      <div class="section-head__r">
+        <span class="eyebrow">Backends</span>
+        <h2 class="h2">One CLI. <em>Thirty-something</em> ways to translate.</h2>
+        <p class="lede">Switch backends per command, per directory, or per language pair. Zellig caches every translation by content hash, so re-runs are free and deterministic.</p>
+      </div>
+      <div class="backends__counter">
+        <span class="bench__num">31</span>
+        <span class="bench__lbl">supported backends</span>
+      </div>
+    </div>
+    <div class="backends">
+      <div class="bcol">
+        <div class="bcol__head">
+          <h3 class="bcol__title">Local</h3>
+          <span class="bcol__count">1 engine</span>
+        </div>
+        <p class="bcol__desc">Run on your laptop or a CI box. No network, no keys, no cost.</p>
+        <div class="btags">
+          <span class="btag btag--feature">nllb-200</span>
+          <span class="btag btag--feature">ct2rs</span>
+        </div>
+      </div>
+      <div class="bcol">
+        <div class="bcol__head">
+          <h3 class="bcol__title">AI / LLMs</h3>
+          <span class="bcol__count">20+ providers</span>
+        </div>
+        <p class="bcol__desc">Any chat-completions endpoint. Prompts and glossaries are first-class.</p>
+        <div class="btags">
+          <span class="btag">openai</span><span class="btag">anthropic</span><span class="btag">gemini</span>
+          <span class="btag">xai</span><span class="btag">groq</span><span class="btag">deepseek</span>
+          <span class="btag">cohere</span><span class="btag">ollama</span><span class="btag">ollama-cloud</span>
+          <span class="btag">openai-responses</span><span class="btag">opencode-go</span><span class="btag">together</span>
+          <span class="btag">fireworks</span><span class="btag">nebius</span><span class="btag">mimo</span>
+          <span class="btag">zai</span><span class="btag">bigmodel</span><span class="btag">aliyun</span>
+          <span class="btag">vertex</span><span class="btag">github-copilot</span>
+        </div>
+      </div>
+      <div class="bcol">
+        <div class="bcol__head">
+          <h3 class="bcol__title">Translation services</h3>
+          <span class="bcol__count">10 providers</span>
+        </div>
+        <p class="bcol__desc">Classic MT services for production-grade quality and speed.</p>
+        <div class="btags">
+          <span class="btag">deepl</span><span class="btag">google</span><span class="btag">yandex</span>
+          <span class="btag">azure</span><span class="btag">libretranslate</span><span class="btag">bergamot</span>
+          <span class="btag">baidu</span><span class="btag">youdao</span><span class="btag">qq</span>
+          <span class="btag">lingva</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ────────────── modes ────────────── -->
+<section class="section section--tight" id="modes">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Two modes</span>
+      <h2 class="h2">Scripted runs <em>or</em> hands-on sessions.</h2>
+      <p class="lede">Use Zellig as a one-shot command in your build pipeline, or drop into an interactive TUI when you're translating by feel.</p>
+    </div>
+    <div class="modes">
+      <div class="mode">
+        <div class="mode__head">
+          <h3 class="mode__name">Command mode</h3>
+          <span class="mode__sub">one-shot · scriptable</span>
+        </div>
+        <p class="mode__desc">Compose Zellig with the rest of Unix. Flags for everything, exit codes you can trust, scriptable output.</p>
+        <pre class="mode__demo">$ zellig translate "Where is the library?" --target fr
+Où est la bibliothèque ?
+
+$ zellig translate --dir docs/ --target ja --mode ollama
+✓ 14 files translated → docs/ja/
+
+$ zellig translate --dir ./locales \
+    --target es --target de --target it \
+    --mode deepl
+✓ 126 files · 18,402 segments · 12.4s</pre>
+        <ul class="mode__list">
+          <li>Perfect for CI, pre-commit, and Makefile targets</li>
+          <li>Streaming stdin/stdout — pipe anything into it</li>
+          <li>Deterministic caching keyed by content hash</li>
+        </ul>
+      </div>
+      <div class="mode">
+        <div class="mode__head">
+          <h3 class="mode__name">Interactive mode</h3>
+          <span class="mode__sub">tui · exploratory</span>
+        </div>
+        <p class="mode__desc">A small TUI with multi-language targeting and file loading. Built with <code>ratatui</code>; keyboard navigation, live preview, and syntax-coloured output.</p>
+        <pre class="mode__demo">$ zellig tui
+
+ ◆ zellig                                      Translate
+────────────────────────────────────────────────────────
+ Models │ Languages │ Config │ Translate │ File │ Detect
+────────────────────────────────────────────────────────
+╭─ Source ↔ ─────────────────╮╭─ Target ───────────────╮
+│  English                   ││  French                │
+╰────────────────────────────╯╰────────────────────────╯
+╭─ Text ───────────────────────────────────────────────╮
+│  The early bird catches the worm.                    │
+╰──────────────────────────────────────────────────────╯
+╭─ Translation ────────────────────────────────────────╮
+│  Le lève-tôt attrape le ver.                         │
+╰──────────────────────────────────────────────────────╯
+────────────────────────────────────────────────────────
+  Type  [Tab]=lang  [Enter]=translate  [Esc]=menu</pre>
+        <ul class="mode__list">
+          <li>Switch backend/target/glossary inline with <code>:commands</code></li>
+          <li>Side-by-side diff when re-translating</li>
+          <li>Save sessions as reusable recipes</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ────────────── benchmarks ────────────── -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Numbers</span>
+      <h2 class="h2">Small binary. <em>Generous</em> appetite.</h2>
+    </div>
+    <div class="bench">
+      <div class="bench__cell">
+        <span class="bench__num">200<small>+ langs</small></span>
+        <span class="bench__lbl">covered by NLLB</span>
+        <p class="bench__note">From Asturian to Zulu — pivot through English when needed.</p>
+      </div>
+      <div class="bench__cell">
+        <span class="bench__num">180<small>ms</small></span>
+        <span class="bench__lbl">local p50, M2</span>
+        <p class="bench__note">A 50-word string, NLLB-200 600M, cold cache.</p>
+      </div>
+      <div class="bench__cell">
+        <span class="bench__num">8<small>MB</small></span>
+        <span class="bench__lbl">stripped binary</span>
+        <p class="bench__note">Single static binary, no Python, no node_modules.</p>
+      </div>
+      <div class="bench__cell">
+        <span class="bench__num">8<small>×</small></span>
+        <span class="bench__lbl">concurrent by default</span>
+        <p class="bench__note">Tokio async fan-out across target languages and batches; backend-aware rate limits.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ────────────── roadmap ────────────── -->
+<section class="section section--alt" id="roadmap">
+  <div class="wrap">
+    <div class="roadmap">
+      <div>
+        <span class="eyebrow">Roadmap</span>
+        <h2 class="h2">What's <em>next</em>.</h2>
+      </div>
+      <div class="timeline">
+        <div class="tl-item is-current">
+          <div class="tl-meta">
+            <span class="tl-ver">v0.1</span>
+            <span class="tl-when">May 2026</span>
+            <span class="tl-status tl-status--current">current</span>
+          </div>
+          <h3 class="tl-title">Foundation</h3>
+          <p class="tl-body">Directory walker, 10 translation services, 20+ AI/LLM backends, interactive TUI, content-hash caching, and 6 file formats.</p>
+        </div>
+        <div class="tl-item is-next">
+          <div class="tl-meta">
+            <span class="tl-ver">v0.2</span>
+            <span class="tl-when">Jul 2026</span>
+            <span class="tl-status tl-status--next">planned</span>
+          </div>
+          <h3 class="tl-title">Glossaries + streaming</h3>
+          <p class="tl-body">First-class glossary files, do-not-translate rules, and streaming output for long documents.</p>
+        </div>
+        <div class="tl-item is-next">
+          <div class="tl-meta">
+            <span class="tl-ver">v0.3</span>
+            <span class="tl-when">Q4 2026</span>
+            <span class="tl-status tl-status--next">planned</span>
+          </div>
+          <h3 class="tl-title">VS Code extension</h3>
+          <p class="tl-body">In-editor preview, side-by-side diff, and one-click backend switching.</p>
+        </div>
+        <div class="tl-item is-next">
+          <div class="tl-meta">
+            <span class="tl-ver">v0.4</span>
+            <span class="tl-when">2027</span>
+            <span class="tl-status tl-status--next">planned</span>
+          </div>
+          <h3 class="tl-title">Server mode</h3>
+          <p class="tl-body">Run Zellig as a lightweight HTTP service for batch APIs and CI fan-out.</p>
+        </div>
+        <div class="tl-item is-next">
+          <div class="tl-meta">
+            <span class="tl-ver">v1.0</span>
+            <span class="tl-when">2027</span>
+            <span class="tl-status tl-status--next">planned</span>
+          </div>
+          <h3 class="tl-title">Stable</h3>
+          <p class="tl-body">Frozen CLI, semver guarantees, long-term support for the v1 plugin ABI.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ────────────── community ────────────── -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Community</span>
+      <h2 class="h2">Built in the <em>open</em>, with friends.</h2>
+    </div>
+    <div class="commu">
+      <div class="commu__card">
+        <div class="commu__head">
+          <h3 class="commu__title">Open source &amp; free</h3>
+        </div>
+        <div class="commu__body">
+          <p class="commu__desc">Zellig is MIT-licensed and developed in the open at <code>github.com/kodaskills/zellig</code>.<br>Issues, pull requests, and backend plugins all welcome.</p>
+        </div>
+        <div class="commu__actions">
+          <a class="btn btn--primary" href="https://github.com/kodaskills/zellig" target="_blank" rel="noreferrer">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.1.79-.25.79-.55v-2.1c-3.2.7-3.88-1.36-3.88-1.36-.52-1.33-1.28-1.68-1.28-1.68-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.73-1.54-2.55-.29-5.24-1.27-5.24-5.66 0-1.25.45-2.27 1.18-3.07-.12-.29-.51-1.45.11-3.02 0 0 .97-.31 3.18 1.17a11 11 0 0 1 5.79 0c2.21-1.48 3.18-1.17 3.18-1.17.62 1.57.23 2.73.11 3.02.74.8 1.18 1.82 1.18 3.07 0 4.4-2.69 5.36-5.25 5.65.41.36.77 1.07.77 2.15v3.19c0 .31.21.66.8.55C20.21 21.39 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5Z"/></svg>
+            View on GitHub
+          </a>
+          <a class="btn" href="#">
+            Read the docs
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+          </a>
+        </div>
+      </div>
+      <div class="commu__card">
+        <div class="commu__head">
+          <h3 class="commu__title">Ways to contribute</h3>
+          <span class="bcol__count">+ you?</span>
+        </div>
+        <ul class="contrib__list">
+          <li>Add a new file format <span class="contrib__hint">(csv / resx / …)</span></li>
+          <li>Add a translation backend</li>
+          <li>Improve the documentation</li>
+        </ul>
+        <div class="commu__actions">
+          <a class="btn" href="https://github.com/kodaskills/zellig/compare" target="_blank" rel="noreferrer">
+            Open a PR
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+          </a>
+          <a class="btn" href="https://github.com/kodaskills/zellig/issues/new?labels=enhancement&template=feature_request.md" target="_blank" rel="noreferrer">
+            Feature request
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+          </a>
+          <a class="btn" href="https://github.com/kodaskills/zellig/issues/new?labels=bug&template=bug_report.md" target="_blank" rel="noreferrer">
+            Bug report
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ────────────── faq ────────────── -->
+<section class="section section--alt" id="faq">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Common questions</span>
+      <h2 class="h2">Things people ask <em>before installing</em>.</h2>
+    </div>
+    <div class="faq">
+      <div class="faq__item is-open">
+        <button class="faq__q">
+          <span>Does the local backend really run offline?</span>
+          <span class="faq__plus"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 3v10M3 8h10"/></svg></span>
+        </button>
+        <p class="faq__a">Yes. Zellig runs NLLB-200 (600M, 1.3B, 3.3B) on-device via <code>ct2rs</code> / CTranslate2. After the first <code>zellig models --download JustFrederik/nllb-200-distilled-600M-ct2-int8</code>, everything happens on your machine — no network calls, no telemetry. For GPU acceleration, build with <code>--features cuda</code> and set <code>device = "cuda"</code> in <code>[local]</code> — the same binary runs on CPU-only machines too. Output quality can be tuned with <code>repetition_penalty</code> and <code>no_repeat_ngram_size</code> in your config.</p>
+      </div>
+      <div class="faq__item">
+        <button class="faq__q">
+          <span>How does it handle existing translations?</span>
+          <span class="faq__plus"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 3v10M3 8h10"/></svg></span>
+        </button>
+        <p class="faq__a">By default, Zellig is conservative. Existing <code>msgstr</code>s, populated XLIFF targets, and already-localized JSON keys are skipped.</p>
+      </div>
+      <div class="faq__item">
+        <button class="faq__q">
+          <span>Can I plug in a custom backend?</span>
+          <span class="faq__plus"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 3v10M3 8h10"/></svg></span>
+        </button>
+        <p class="faq__a">Yes — implement the <code>Translator</code> trait in Rust (around 60 lines) and wire it into your config. The plugin interface is stable and well-documented.</p>
+      </div>
+      <div class="faq__item">
+        <button class="faq__q">
+          <span>Is this production-ready?</span>
+          <span class="faq__plus"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 3v10M3 8h10"/></svg></span>
+        </button>
+        <p class="faq__a">Zellig is at 0.1.x — early but functional. The CLI surface and file-format adapters are working; LLM prompts and the plugin ABI may still shift before 1.0. Pin your version in CI.</p>
+      </div>
+      <div class="faq__item">
+        <button class="faq__q">
+          <span>How is it different from <code>po4a</code> or <code>translate-toolkit</code>?</span>
+          <span class="faq__plus"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 3v10M3 8h10"/></svg></span>
+        </button>
+        <p class="faq__a">Those are excellent and Zellig stands on their shoulders. The differences: a single static binary, first-class LLM and local-model backends, content-hash caching, and an interactive REPL. Pick whichever fits your team.</p>
+      </div>
+      <div class="faq__item">
+        <button class="faq__q">
+          <span>What about glossaries and do-not-translate?</span>
+          <span class="faq__plus"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 3v10M3 8h10"/></svg></span>
+        </button>
+        <p class="faq__a">Glossary support is planned for v0.2. Today, JSON and YAML formats preserve interpolation tokens like <code>{{name}}</code> verbatim.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ────────────── footer ────────────── -->
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot__grid">
+      <div class="foot__col foot__brand">
+        <div class="brand">
+          <span class="brand__mark">
+            <svg viewBox="0 0 867 913" aria-hidden="true">
+              <path d="M1.82,472.741l0,-313.328l148.419,-159.413l714.608,0l0,274.849l-401.28,417.771l-159.413,0l445.256,-456.25l0,-126.431l-544.202,0l-87.952,93.449l148.419,0l-263.855,269.352" />
+              <path d="M557.016,219.88l-153.916,0l-401.28,412.274l0,280.346l709.111,0l153.916,-164.91l0,-307.831l-258.358,263.855l148.419,0l-98.946,98.946l-544.202,0l0,-131.928l445.256,-450.753Z" />
+            </svg>
+          </span>
+          <span class="brand__name">zellig</span>
+        </div>
+        <p>A small Rust CLI for translating anything, locally or in the cloud. Named for the geometric tilework — small pieces, large patterns.</p>
+        <code class="foot__install">$ <span id="footer-install-cmd">curl -fsSL https://raw.githubusercontent.com/kodaskills/zellig/main/install.sh | sh</span></code>
+      </div>
+      <div class="foot__col">
+        <h4>Project</h4>
+        <ul>
+          <li><a href="https://github.com/kodaskills/zellig">GitHub</a></li>
+          <li><a href="#">Releases</a></li>
+          <li><a href="#">Changelog</a></li>
+          <li><a href="#">License (MIT)</a></li>
+        </ul>
+      </div>
+      <div class="foot__col">
+        <h4>Docs</h4>
+        <ul>
+          <li><a href="#">Getting started</a></li>
+          <li><a href="#">CLI reference</a></li>
+          <li><a href="#">Backends</a></li>
+          <li><a href="#">Recipes</a></li>
+        </ul>
+      </div>
+      <div class="foot__col">
+        <h4>Community</h4>
+        <ul>
+          <li><a href="#">Discussions</a></li>
+          <li><a href="#">Matrix</a></li>
+          <li><a href="#">Sponsor</a></li>
+          <li><a href="#">Contributing</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot__bot">
+      <span>© 2026 Zellig contributors · MIT</span>
+      <code id="footer-build">build · 2026-05-12 · sha 0d3a91f</code>
+    </div>
+  </div>
+</footer>
+
+
+<script src="main.js" defer></script>
+</body>
+</html>

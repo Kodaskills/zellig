@@ -1,0 +1,197 @@
+name: Release Please
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to publish (e.g. v0.1.0)"
+        required: true
+
+permissions:
+  contents: write
+  pull-requests: write
+  packages: write
+
+jobs:
+  # ── Open / update release PR, create tag + GitHub Release on merge ────────
+  release-please:
+    name: Release Please
+    runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+    steps:
+      - if: github.event_name == 'push'
+        uses: googleapis/release-please-action@v5
+        id: release
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          config-file: .github/release-please-config.json
+          manifest-file: .github/.release-please-manifest.json
+
+  # ── Build and upload binaries to the GitHub Release ───────────────────────
+  binaries:
+    name: Binary (${{ matrix.target }})
+    needs: release-please
+    if: |
+      needs.release-please.outputs.release_created == 'true' ||
+      github.event_name == 'workflow_dispatch'
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            artifact: zellig-linux-x86_64.tar.gz
+            use_zigbuild: true
+          - os: macos-13
+            target: x86_64-apple-darwin
+            artifact: zellig-macos-x86_64.tar.gz
+            use_zigbuild: false
+          - os: macos-latest
+            target: aarch64-apple-darwin
+            artifact: zellig-macos-aarch64.tar.gz
+            use_zigbuild: false
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            artifact: zellig-windows-x86_64.zip
+            use_zigbuild: false
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || needs.release-please.outputs.tag_name }}
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: "release-${{ matrix.target }}"
+
+      - name: Install build dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake build-essential pkg-config
+
+      - name: Install build dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: brew install cmake
+
+      - name: Install cargo-zigbuild + Zig (Linux)
+        if: matrix.use_zigbuild
+        run: |
+          cargo install cargo-zigbuild --locked
+          pip install ziglang
+
+      - name: Build (Linux with zigbuild)
+        if: matrix.use_zigbuild
+        run: |
+          cargo zigbuild --release --locked \
+            --target x86_64-unknown-linux-gnu.2.17 \
+            --features local
+
+      - name: Build (non-Linux)
+        if: ${{ !matrix.use_zigbuild && runner.os != 'Windows' }}
+        run: cargo build --release --locked --target ${{ matrix.target }} --features local
+
+      - name: Build (Windows — no local feature)
+        if: runner.os == 'Windows'
+        run: cargo build --release --locked --target ${{ matrix.target }}
+
+      - name: Package (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          tar -czf ${{ matrix.artifact }} \
+            -C target/x86_64-unknown-linux-gnu/release zellig
+          sha256sum ${{ matrix.artifact }} > ${{ matrix.artifact }}.sha256
+
+      - name: Package (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          tar -czf ${{ matrix.artifact }} -C target/${{ matrix.target }}/release zellig
+          shasum -a 256 ${{ matrix.artifact }} > ${{ matrix.artifact }}.sha256
+
+      - name: Package (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          Compress-Archive -Path target/${{ matrix.target }}/release/zellig.exe -DestinationPath ${{ matrix.artifact }}
+          $hash = (Get-FileHash ${{ matrix.artifact }} -Algorithm SHA256).Hash.ToLower()
+          "$hash  ${{ matrix.artifact }}" | Out-File -FilePath "${{ matrix.artifact }}.sha256" -Encoding ASCII
+
+      - name: Upload to release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || needs.release-please.outputs.tag_name }}
+          files: |
+            ${{ matrix.artifact }}
+            ${{ matrix.artifact }}.sha256
+
+  # ── Build and push Docker image to GHCR ──────────────────────────────────
+  docker:
+    name: Docker (GHCR)
+    needs: release-please
+    if: |
+      needs.release-please.outputs.release_created == 'true' ||
+      github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || needs.release-please.outputs.tag_name }}
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/metadata-action@v5
+        id: meta
+        with:
+          images: ghcr.io/kodaskills/zellig
+          tags: |
+            type=semver,pattern={{version}},value=${{ github.event_name == 'workflow_dispatch' && inputs.tag || needs.release-please.outputs.tag_name }}
+            type=raw,value=latest
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: prod
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  # ── Publish to crates.io after a release is created ───────────────────────
+  crates-io:
+    name: Publish to crates.io
+    needs: release-please
+    if: |
+      (needs.release-please.outputs.release_created == 'true' ||
+      github.event_name == 'workflow_dispatch') &&
+      !contains(needs.release-please.outputs.tag_name, '-')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || needs.release-please.outputs.tag_name }}
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: "release-crates"
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake build-essential pkg-config
+
+      - name: Publish
+        run: cargo publish --token ${{ secrets.CARGO_REGISTRY_TOKEN }} --features local

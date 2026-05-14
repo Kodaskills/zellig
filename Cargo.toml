@@ -1,0 +1,71 @@
+[package]
+name = "zellig"
+version = "0.1.0"
+edition = "2021"
+description = "Auto Translation CLI tool with local and AI support"
+authors = ["Kodaskills"]
+
+[dependencies]
+clap = { version = "4", features = ["derive"] }
+genai = "0.5.3"
+serde = { version = "1", features = ["derive"] }
+sonic-rs = "0.5"
+serde_json = "1"
+thiserror = "2"
+figment2 = { version = "0.11", features = ["toml", "json", "env"] }
+md5 = "0.8"
+sha2 = "0.11"
+hmac = "0.13"
+hex = "0.4"
+tokio = { version = "1", features = ["full"] }
+async-trait = "0.1"
+futures = "0.3"
+whatlang = { version = "0.18", optional = true }
+reqwest = { version = "0.13", features = ["json", "form"] }
+toml = "1"
+serde_yaml = "0.9"
+quick-xml = "0.40"
+ratatui = "0.30"
+indicatif = "0.18"
+
+[dependencies.ct2rs]
+version = "0.9.17"
+default-features = false
+features = ["dnnl", "tokenizers"]
+optional = true
+
+[dependencies.hf-hub]
+version = "0.5.0"
+default-features = false
+features = ["tokio", "rustls-tls"]
+optional = true
+
+# Note: llama_cpp_rs has build issues on macOS, keeping as placeholder
+# [dependencies.llama_cpp_rs]
+# version = "0.3"
+# optional = true
+
+# ONNX Runtime - disabled (requires cmake)
+# [dependencies.onnxruntime]
+# version = "0.0.14"
+# optional = true
+
+# TensorFlow Lite - disabled (no stable crate)
+# [dependencies.tflite-rs]
+# version = "0.1"
+# optional = true
+
+# PyTorch - disabled (large dependency)
+# [dependencies.tch]
+# version = "0.17"
+# optional = true
+
+[features]
+default = []
+local = ["ct2rs", "hf-hub", "whatlang"]
+cuda = ["local", "ct2rs/cuda-dynamic-loading"]
+full = ["local"]
+gguf = []  # Placeholder - llama_cpp_rs has build issues
+# onnx = ["onnxruntime"]  # Disabled - requires cmake
+# tflite = []  # Disabled - no stable crate
+# pytorch = ["tch"]  # Disabled - large dependency

@@ -1,0 +1,29 @@
+services:
+  dev:
+    build:
+      context: .
+      target: dev
+    volumes:
+      - .:/app
+      # Persist cargo registry and build artifacts across restarts
+      - cargo-registry:/usr/local/cargo/registry
+      - cargo-git:/usr/local/cargo/git
+      - target-cache:/app/target
+    environment:
+      RUST_LOG: debug
+    profiles:
+      - dev
+
+  prod:
+    build:
+      context: .
+      target: prod
+    environment:
+      RUST_LOG: info
+    profiles:
+      - prod
+
+volumes:
+  cargo-registry:
+  cargo-git:
+  target-cache:
