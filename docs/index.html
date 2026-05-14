@@ -89,7 +89,11 @@
           <code>cargo install zellig</code>
         </div>
         <div class="hero__sub">
-          <span>· macOS · Linux · Windows · 8 MB binary · zero runtime dependencies ·</span>
+          <span>or</span>
+          <code>docker run --rm ghcr.io/kodaskills/zellig</code>
+        </div>
+        <div class="hero__sub">
+          <span>· macOS · Linux · Windows · Docker · 8 MB binary · zero runtime dependencies ·</span>
         </div>
       </div>
       <div class="hero__stage">
@@ -508,6 +512,22 @@ $ zellig translate --dir ./locales \
           <span class="faq__plus"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 3v10M3 8h10"/></svg></span>
         </button>
         <p class="faq__a">Those are excellent and Zellig stands on their shoulders. The differences: a single static binary, first-class LLM and local-model backends, content-hash caching, and an interactive REPL. Pick whichever fits your team.</p>
+      </div>
+      <div class="faq__item">
+        <button class="faq__q">
+          <span>Can I run Zellig with Docker?</span>
+          <span class="faq__plus"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 3v10M3 8h10"/></svg></span>
+        </button>
+        <p class="faq__a">Yes — an official image (including the <code>local</code> NLLB-200 backend) is published to GHCR after every release:
+          <br><br>
+          <code>docker run --rm ghcr.io/kodaskills/zellig translate "Hello" --target fr</code>
+          <br><br>
+          To translate a local directory, mount it as a volume:
+          <br><br>
+          <code>docker run --rm -v "$(pwd):/data" ghcr.io/kodaskills/zellig translate --dir /data/locales --target es</code>
+          <br><br>
+          A <code>docker-compose.yml</code> is included in the repo with a <strong>dev</strong> profile (cargo-watch hot-reload) and a <strong>prod</strong> profile for one-off runs. See the <a href="https://github.com/kodaskills/zellig" target="_blank" rel="noreferrer">repository</a> for details.
+        </p>
       </div>
       <div class="faq__item">
         <button class="faq__q">

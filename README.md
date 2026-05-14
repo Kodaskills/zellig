@@ -77,6 +77,42 @@ cargo build --release
 ./target/release/zellig --help
 ```
 
+**Docker** — pull from GHCR, no Rust needed:
+
+```bash
+# Translate a string
+docker run --rm ghcr.io/kodaskills/zellig translate "Hello, world!" --target fr
+
+# Mount a local directory and translate its files
+docker run --rm -v "$(pwd):/data" ghcr.io/kodaskills/zellig \
+  translate --dir /data/locales --target es --target de
+
+# Pass a config file
+docker run --rm \
+  -v "$(pwd)/zellig.toml:/config/zellig.toml:ro" \
+  -v "$(pwd):/data" \
+  ghcr.io/kodaskills/zellig \
+  --config /config/zellig.toml translate --dir /data/locales --target fr
+```
+
+**Docker Compose** (from the repo — includes a dev mode with hot-reload):
+
+```bash
+# Clone the repo first
+git clone https://github.com/kodaskills/zellig && cd zellig
+
+# One-off production run
+docker compose --profile prod run --rm prod translate "Hello, world!" --target fr
+
+# Development shell — cargo-watch recompiles on every file save
+docker compose --profile dev up
+```
+
+Available image tags: `ghcr.io/kodaskills/zellig:latest` · `ghcr.io/kodaskills/zellig:0.1.0`
+
+> The prod image includes the `local` NLLB-200 backend. You still need to download a model
+> the first time (`zellig models --download <repo>`); mount a volume to persist the cache.
+
 ---
 
 ## ⚡ Quick Start
