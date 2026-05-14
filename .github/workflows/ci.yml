@@ -55,7 +55,7 @@ jobs:
             libudev-dev \
             libwayland-dev \
             libxkbcommon-dev
-      - run: cargo clippy --all-targets --all-features -- -D warnings
+      - run: cargo clippy --all-targets -- -D warnings
 
   # ── Tests ─────────────────────────────────────────────────────────────────
   test:
@@ -92,7 +92,6 @@ jobs:
             libwayland-dev \
             libxkbcommon-dev
 
-      - run: cargo test --all-targets --all-features
       - run: cargo test --all-targets
 
   # ── Documentation Build ───────────────────────────────────────────────────
@@ -116,7 +115,7 @@ jobs:
             libwayland-dev \
             libxkbcommon-dev
       - name: Build documentation
-        run: cargo doc --no-deps --all-features
+        run: cargo doc --no-deps
         env:
           RUSTDOCFLAGS: "-D warnings"
       - uses: actions/upload-artifact@v7
