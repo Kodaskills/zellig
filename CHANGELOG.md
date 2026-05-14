@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/Kodaskills/zellig/compare/v0.1.0...v0.1.1) (2026-05-14)
+
+
+### Bug Fixes
+
+* use $HOME/.cargo/bin in container steps (GHA sets HOME=/github/home) ([594c6ce](https://github.com/Kodaskills/zellig/commit/594c6cefe7337b26ce6f3d480095c2a355b80383))
+
 ## 0.1.0 (2026-05-14)
 
 

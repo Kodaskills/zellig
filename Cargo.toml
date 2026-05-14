@@ -1,6 +1,6 @@
 [package]
 name = "zellig"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 description = "Auto Translation CLI tool with local and AI support"
 authors = ["Kodaskills"]
