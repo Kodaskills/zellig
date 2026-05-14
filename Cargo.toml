@@ -4,6 +4,8 @@ version = "0.1.0"
 edition = "2021"
 description = "Auto Translation CLI tool with local and AI support"
 authors = ["Kodaskills"]
+license = "MIT"
+repository = "https://github.com/Kodaskills/zellig"
 
 [dependencies]
 clap = { version = "4", features = ["derive"] }
