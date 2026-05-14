@@ -81,6 +81,7 @@ jobs:
       - name: Install Rust (inside container)
         if: matrix.container != ''
         run: |
+          apt-get update && apt-get install -y --no-install-recommends curl
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable
           echo "$HOME/.cargo/bin" >> $GITHUB_PATH
 
