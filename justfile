@@ -9,7 +9,7 @@ fmt:
 # Lint Rust code
 [group('quality')]
 lint:
-    cargo clippy --all-targets -- -D warnings
+    cargo clippy --all-targets --features local -- -D warnings
 
 # Check for outdated dependencies
 [group('quality')]

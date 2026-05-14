@@ -29,7 +29,7 @@ ratatui = "0.30"
 indicatif = "0.18"
 
 [dependencies.ct2rs]
-version = "0.9.17"
+version = "=0.9.17"
 default-features = false
 features = ["dnnl", "tokenizers"]
 optional = true
