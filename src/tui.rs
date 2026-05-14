@@ -1895,16 +1895,14 @@ impl App {
                         self.models.scroll + 1
                     };
                 }
-                KeyCode::Enter => {
-                    if !self.models.installed.is_empty() {
-                        let repo = &self.models.installed
-                            [self.models.scroll.min(self.models.installed.len() - 1)];
-                        let config_path = crate::manager::resolve_config_path(None);
-                        let _ = crate::manager::set_model_in_config(&config_path, repo);
-                        self.config.local.model_repo = repo.clone();
-                        self.async_st.result_text = Some(format!("✓ Configured: {}", repo));
-                        self.async_st.result_is_error = false;
-                    }
+                KeyCode::Enter if !self.models.installed.is_empty() => {
+                    let repo = &self.models.installed
+                        [self.models.scroll.min(self.models.installed.len() - 1)];
+                    let config_path = crate::manager::resolve_config_path(None);
+                    let _ = crate::manager::set_model_in_config(&config_path, repo);
+                    self.config.local.model_repo = repo.clone();
+                    self.async_st.result_text = Some(format!("✓ Configured: {}", repo));
+                    self.async_st.result_is_error = false;
                 }
                 KeyCode::Char('i' | 'I') => {
                     self.models.browsing = true;
@@ -1940,18 +1938,14 @@ impl App {
         // Browsing mode
         match key.code {
             KeyCode::Up => self.models.cursor = self.models.cursor.saturating_sub(1),
-            KeyCode::Down => {
-                if self.models.cursor + 1 < self.models.results.len() {
-                    self.models.cursor += 1;
-                }
+            KeyCode::Down if self.models.cursor + 1 < self.models.results.len() => {
+                self.models.cursor += 1;
             }
-            KeyCode::Enter => {
-                if !self.models.results.is_empty() && !self.async_st.is_loading {
-                    let repo = self.models.results[self.models.cursor].id.clone();
-                    let config_path = crate::manager::resolve_config_path(None);
-                    let _ = crate::manager::set_model_in_config(&config_path, &repo);
-                    self.start_download(&repo);
-                }
+            KeyCode::Enter if !self.models.results.is_empty() && !self.async_st.is_loading => {
+                let repo = self.models.results[self.models.cursor].id.clone();
+                let config_path = crate::manager::resolve_config_path(None);
+                let _ = crate::manager::set_model_in_config(&config_path, &repo);
+                self.start_download(&repo);
             }
             KeyCode::Char('i' | 'I') => {
                 self.models.browsing = false;
@@ -1984,10 +1978,8 @@ impl App {
             KeyCode::Up => {
                 self.service_picker_cursor = self.service_picker_cursor.saturating_sub(1);
             }
-            KeyCode::Down => {
-                if self.service_picker_cursor + 1 < count {
-                    self.service_picker_cursor += 1;
-                }
+            KeyCode::Down if self.service_picker_cursor + 1 < count => {
+                self.service_picker_cursor += 1;
             }
             KeyCode::Enter => {
                 self.config.mode = TranslationMode::all()

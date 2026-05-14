@@ -67,23 +67,19 @@ impl super::FormatHandler for XliffHandler {
                         in_source = true;
                     }
                 }
-                Ok(Event::Text(ref e)) => {
-                    if in_source {
-                        let text = String::from_utf8_lossy(e.as_ref()).into_owned();
-                        let t = text.trim().to_string();
-                        if !t.is_empty() {
-                            strings.push(super::TranslatableString {
-                                id: format!("xliff.{}", current_id),
-                                text: t,
-                                _context: Some("XLIFF source text".to_string()),
-                            });
-                        }
+                Ok(Event::Text(ref e)) if in_source => {
+                    let text = String::from_utf8_lossy(e.as_ref()).into_owned();
+                    let t = text.trim().to_string();
+                    if !t.is_empty() {
+                        strings.push(super::TranslatableString {
+                            id: format!("xliff.{}", current_id),
+                            text: t,
+                            _context: Some("XLIFF source text".to_string()),
+                        });
                     }
                 }
-                Ok(Event::End(ref e)) => {
-                    if is_end(e, b"source") {
-                        in_source = false;
-                    }
+                Ok(Event::End(ref e)) if is_end(e, b"source") => {
+                    in_source = false;
                 }
                 Ok(Event::Eof) => break,
                 Err(e) => {
@@ -145,12 +141,10 @@ impl super::FormatHandler for XliffHandler {
                         in_target = false;
                     }
                 }
-                Ok(Event::Text(_)) => {
-                    if in_target {
-                        if let Some(translated) = translation_map.get(&current_id) {
-                            let text_end = reader.buffer_position() as usize;
-                            edits.push((target_start, text_end, translated.clone()));
-                        }
+                Ok(Event::Text(_)) if in_target => {
+                    if let Some(translated) = translation_map.get(&current_id) {
+                        let text_end = reader.buffer_position() as usize;
+                        edits.push((target_start, text_end, translated.clone()));
                     }
                 }
                 Ok(Event::End(ref e)) => {

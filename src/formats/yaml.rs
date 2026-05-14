@@ -48,14 +48,12 @@ fn extract_from_yaml(
     prefix: &str,
 ) {
     match value {
-        serde_json::Value::String(s) => {
-            if !s.trim().is_empty() {
-                strings.push(super::TranslatableString {
-                    id: prefix.to_string(),
-                    text: s.clone(),
-                    _context: Some("YAML string value".to_string()),
-                });
-            }
+        serde_json::Value::String(s) if !s.trim().is_empty() => {
+            strings.push(super::TranslatableString {
+                id: prefix.to_string(),
+                text: s.clone(),
+                _context: Some("YAML string value".to_string()),
+            });
         }
         serde_json::Value::Object(map) => {
             for (k, v) in map {

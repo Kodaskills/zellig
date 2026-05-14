@@ -56,7 +56,7 @@ impl super::FormatHandler for PoHandler {
             }
             idx += 1;
         }
-        replacements.sort_by(|a, b| b.1.cmp(&a.1));
+        replacements.sort_by_key(|b| std::cmp::Reverse(b.1));
         let mut result = original.to_string();
         for (start, end, text) in &replacements {
             result.replace_range(*start..*end, text);

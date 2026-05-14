@@ -40,7 +40,7 @@ impl super::FormatHandler for MarkdownHandler {
             .map(|t| (t.id.clone(), t.translated_text.clone()))
             .collect();
         let mut segments = extract_md_segments(original);
-        segments.sort_by(|a, b| b.end.cmp(&a.end));
+        segments.sort_by_key(|b| std::cmp::Reverse(b.end));
         let mut result = original.to_string();
         for seg in &segments {
             if let Some(translated) = translation_map.get(&seg.id) {
