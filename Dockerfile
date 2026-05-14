@@ -8,7 +8,7 @@ RUN cargo chef prepare --recipe-path recipe.json
 # ── Stage 2: release builder (CUDA devel — one binary: DNNL + CUDA dynamic) ──
 # Requires no real GPU; nvcc + CUDA headers are enough at build time.
 # At runtime the binary auto-detects CUDA and falls back to CPU if absent.
-FROM nvidia/cuda:12.6-devel-ubuntu22.04 AS builder
+FROM nvidia/cuda:12.6.3-devel-ubuntu22.04 AS builder
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl build-essential cmake pkg-config \
     && rm -rf /var/lib/apt/lists/*
@@ -34,7 +34,7 @@ ENV RUST_LOG=debug
 CMD ["cargo", "watch", "-x", "check --features local"]
 
 # ── Stage 4: prod — CUDA runtime so GPU libs are present when GPU is available ─
-FROM nvidia/cuda:12.6-runtime-ubuntu22.04 AS prod
+FROM nvidia/cuda:12.6.3-runtime-ubuntu22.04 AS prod
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     libgomp1 \

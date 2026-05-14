@@ -50,7 +50,7 @@ jobs:
             target: x86_64-unknown-linux-gnu
             artifact: zellig-linux-x86_64.tar.gz
             use_zigbuild: true
-            container: "nvidia/cuda:12.6-devel-ubuntu22.04"
+            container: "nvidia/cuda:12.6.3-devel-ubuntu22.04"
             features: cuda
           # macOS: CUDA not available on Apple hardware → CPU/DNNL only.
           - os: macos-13
@@ -196,7 +196,7 @@ jobs:
       github.event_name == 'workflow_dispatch') &&
       !contains(needs.release-please.outputs.tag_name, '-')
     runs-on: ubuntu-latest
-    container: nvidia/cuda:12.6-devel-ubuntu22.04
+    container: nvidia/cuda:12.6.3-devel-ubuntu22.04
     steps:
       - uses: actions/checkout@v6
         with:
