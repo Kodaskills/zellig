@@ -100,7 +100,16 @@ pub(crate) mod ct2_backend {
                 #[cfg(feature = "cuda")]
                 {
                     match config.device.to_lowercase().as_str() {
-                        "cuda" => ct2rs::Device::CUDA,
+                        "cuda" => {
+                            if ct2rs::sys::get_device_count(ct2rs::Device::CUDA) > 0 {
+                                ct2rs::Device::CUDA
+                            } else {
+                                eprintln!(
+                                    "warning: no CUDA devices found, falling back to CPU"
+                                );
+                                ct2rs::Device::CPU
+                            }
+                        }
                         _ => ct2rs::Device::CPU,
                     }
                 }
