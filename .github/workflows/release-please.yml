@@ -39,33 +39,53 @@ jobs:
       needs.release-please.outputs.release_created == 'true' ||
       github.event_name == 'workflow_dispatch'
     runs-on: ${{ matrix.os }}
+    container: ${{ matrix.container != '' && matrix.container || null }}
     strategy:
       fail-fast: false
       matrix:
         include:
+          # Linux: built inside nvidia/cuda devel container → one binary with
+          # DNNL + CUDA dynamic-loading; auto-detects GPU at runtime.
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
             artifact: zellig-linux-x86_64.tar.gz
             use_zigbuild: true
+            container: "nvidia/cuda:12.6-devel-ubuntu22.04"
+            features: cuda
+          # macOS: CUDA not available on Apple hardware → CPU/DNNL only.
           - os: macos-13
             target: x86_64-apple-darwin
             artifact: zellig-macos-x86_64.tar.gz
             use_zigbuild: false
+            container: ""
+            features: local
           - os: macos-latest
             target: aarch64-apple-darwin
             artifact: zellig-macos-aarch64.tar.gz
             use_zigbuild: false
+            container: ""
+            features: local
+          # Windows: local feature build is complex on MSVC; ships without local.
           - os: windows-latest
             target: x86_64-pc-windows-msvc
             artifact: zellig-windows-x86_64.zip
             use_zigbuild: false
+            container: ""
+            features: ""
 
     steps:
       - uses: actions/checkout@v6
         with:
           ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || needs.release-please.outputs.tag_name }}
 
+      - name: Install Rust (inside container)
+        if: matrix.container != ''
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable
+          echo "/root/.cargo/bin" >> $GITHUB_PATH
+
       - uses: dtolnay/rust-toolchain@stable
+        if: matrix.container == ''
         with:
           targets: ${{ matrix.target }}
 
@@ -73,32 +93,31 @@ jobs:
         with:
           shared-key: "release-${{ matrix.target }}"
 
-      - name: Install build dependencies (Linux)
+      - name: Install build dependencies (Linux in container)
         if: runner.os == 'Linux'
         run: |
-          sudo apt-get update
-          sudo apt-get install -y cmake build-essential pkg-config
+          apt-get update
+          apt-get install -y --no-install-recommends cmake build-essential pkg-config python3-pip
+          pip3 install ziglang
 
       - name: Install build dependencies (macOS)
         if: runner.os == 'macOS'
         run: brew install cmake
 
-      - name: Install cargo-zigbuild + Zig (Linux)
+      - name: Install cargo-zigbuild (Linux)
         if: matrix.use_zigbuild
-        run: |
-          cargo install cargo-zigbuild --locked
-          pip install ziglang
+        run: cargo install cargo-zigbuild --locked
 
       - name: Build (Linux with zigbuild)
         if: matrix.use_zigbuild
         run: |
           cargo zigbuild --release --locked \
             --target x86_64-unknown-linux-gnu.2.17 \
-            --features local
+            --features ${{ matrix.features }}
 
       - name: Build (non-Linux)
         if: ${{ !matrix.use_zigbuild && runner.os != 'Windows' }}
-        run: cargo build --release --locked --target ${{ matrix.target }} --features local
+        run: cargo build --release --locked --target ${{ matrix.target }} --features ${{ matrix.features }}
 
       - name: Build (Windows — no local feature)
         if: runner.os == 'Windows'
@@ -177,21 +196,22 @@ jobs:
       github.event_name == 'workflow_dispatch') &&
       !contains(needs.release-please.outputs.tag_name, '-')
     runs-on: ubuntu-latest
+    container: nvidia/cuda:12.6-devel-ubuntu22.04
     steps:
       - uses: actions/checkout@v6
         with:
           ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || needs.release-please.outputs.tag_name }}
 
-      - uses: dtolnay/rust-toolchain@stable
+      - name: Install Rust + build deps
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends curl cmake build-essential pkg-config
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable
+          echo "/root/.cargo/bin" >> $GITHUB_PATH
 
       - uses: Swatinem/rust-cache@v2
         with:
           shared-key: "release-crates"
 
-      - name: Install build dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y cmake build-essential pkg-config
-
       - name: Publish
-        run: cargo publish --token ${{ secrets.CARGO_REGISTRY_TOKEN }} --features local
+        run: cargo publish --token ${{ secrets.CARGO_REGISTRY_TOKEN }} --features cuda
