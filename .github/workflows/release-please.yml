@@ -70,7 +70,7 @@ jobs:
             cuda_version: ""
           # Windows: CUDA toolkit installed at build time via Jimver action;
           # cuda-dynamic-loading so the binary runs on CPU-only machines too.
-          - os: windows-latest
+          - os: windows-2022
             target: x86_64-pc-windows-msvc
             artifact: zellig-windows-x86_64.zip
             use_zigbuild: false
