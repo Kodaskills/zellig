@@ -112,6 +112,12 @@ jobs:
           rustup show
           echo "$HOME/.cargo/bin" >> $GITHUB_PATH
 
+      - name: Pin CMake to 3.x (Windows — CMake 4.x breaks FindCUDA used by ct2rs)
+        if: runner.os == 'Windows'
+        uses: jwlawson/actions-setup-cmake@v2
+        with:
+          cmake-version: '3.31.7'
+
       - name: Install CUDA toolkit (Windows)
         if: runner.os == 'Windows'
         uses: Jimver/cuda-toolkit@v0.2.19
