@@ -387,18 +387,19 @@ async fn handle_models(
             output::info(format!("Downloading: {}", repo));
             manager::download_model(&repo).await?;
             output::ok("Download complete");
+            let resolved = manager::resolve_config_path(config_path);
+            manager::set_model_in_config(&resolved, &repo)?;
+            output::ok(format!("Model set in config: {}", resolved.display()));
         }
         #[cfg(not(feature = "local"))]
         {
+            let _ = config_path;
             output::err("Download requires --features local");
             output::info(format!(
                 r#"Rebuild: cargo run --features local -- models --download "{}""#,
                 repo
             ));
         }
-        let resolved = manager::resolve_config_path(config_path);
-        manager::set_model_in_config(&resolved, &repo)?;
-        output::ok(format!("Model set in config: {}", resolved.display()));
         return Ok(());
     }
 

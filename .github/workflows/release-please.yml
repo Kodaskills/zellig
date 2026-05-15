@@ -65,13 +65,12 @@ jobs:
             use_zigbuild: false
             container: ""
             features: local
-          # Windows: local feature build is complex on MSVC; ships without local.
           - os: windows-latest
             target: x86_64-pc-windows-msvc
             artifact: zellig-windows-x86_64.zip
             use_zigbuild: false
             container: ""
-            features: ""
+            features: local
 
     steps:
       - uses: actions/checkout@v6
@@ -122,9 +121,9 @@ jobs:
         if: ${{ !matrix.use_zigbuild && runner.os != 'Windows' }}
         run: cargo build --release --locked --target ${{ matrix.target }} --features ${{ matrix.features }}
 
-      - name: Build (Windows — no local feature)
+      - name: Build (Windows)
         if: runner.os == 'Windows'
-        run: cargo build --release --locked --target ${{ matrix.target }}
+        run: cargo build --release --locked --target ${{ matrix.target }} --features ${{ matrix.features }}
 
       - name: Package (Linux)
         if: runner.os == 'Linux'

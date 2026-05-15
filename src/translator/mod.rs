@@ -135,6 +135,13 @@ impl TranslatorFactory {
         self.creators
             .get(&config.mode)
             .ok_or_else(|| {
+                #[cfg(not(feature = "local"))]
+                if config.mode == TranslationMode::Local {
+                    return ZelligError::ConfigError(
+                        "Local backend not available — binary compiled without 'local' feature"
+                            .to_string(),
+                    );
+                }
                 ZelligError::ConfigError(format!(
                     "No translator for {:?} — check feature flags or config",
                     config.mode
