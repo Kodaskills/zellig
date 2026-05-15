@@ -124,7 +124,7 @@ jobs:
         with:
           cuda: ${{ matrix.cuda_version }}
           method: network
-          sub-packages: '["nvcc", "cudart", "cublas", "cublas_dev", "thrust"]'
+          sub-packages: '["nvcc", "cudart", "cublas", "cublas_dev", "curand", "curand_dev", "thrust"]'
 
       - name: Junction CUDA to short path (FindCUDA chokes on backslash+letter in paths with spaces)
         if: runner.os == 'Windows'
