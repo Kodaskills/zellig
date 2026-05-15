@@ -132,7 +132,7 @@ jobs:
         run: |
           $src = if ($env:CUDA_PATH) { $env:CUDA_PATH } else { "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.6" }
           cmd /c "mklink /J C:\CUDA `"$src`""
-          Add-Content -Path $env:GITHUB_ENV -Value "CUDA_PATH=C:\CUDA"
+          Add-Content -Path $env:GITHUB_ENV -Value "CUDA_PATH=C:/CUDA"
 
       - name: Install cargo-zigbuild (Linux)
         if: matrix.use_zigbuild
