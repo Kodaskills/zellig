@@ -53,7 +53,7 @@ jobs:
             container: "nvidia/cuda:12.6.3-devel-ubuntu22.04"
             features: cuda
           # macOS: CUDA not available on Apple hardware → CPU/DNNL only.
-          - os: macos-13
+          - os: macos-15-intel
             target: x86_64-apple-darwin
             artifact: zellig-macos-x86_64.tar.gz
             use_zigbuild: false
@@ -104,6 +104,7 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           brew install cmake
+          rustup show
           echo "$HOME/.cargo/bin" >> $GITHUB_PATH
 
       - name: Install cargo-zigbuild (Linux)
