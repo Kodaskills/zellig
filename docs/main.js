@@ -340,8 +340,8 @@ function initScrollReveal() {
 
 // ── build date ────────────────────────────────────────────────────────────────
 
-document.getElementById('footer-build').textContent =
-  'build · ' + new Date().toISOString().slice(0, 10) + ' · sha 0d3a91f';
+const _fb = document.getElementById('footer-build');
+if (_fb) _fb.textContent = 'build · ' + new Date().toISOString().slice(0, 10) + ' · sha 0d3a91f';
 
 // ── init ──────────────────────────────────────────────────────────────────────
 
