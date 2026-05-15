@@ -20,6 +20,7 @@ pub enum ConfigFormat {
 
 #[derive(Parser)]
 #[command(name = "zellig")]
+#[command(version)]
 #[command(about = "Auto Translation CLI tool locally with NLLB or with AI support", long_about = None)]
 pub struct Cli {
     #[command(subcommand)]
