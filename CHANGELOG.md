@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.1](https://github.com/Kodaskills/zellig/compare/v0.1.0...v0.1.1) (2026-05-15)
+
+
+### Bug Fixes
+
+* 🐛 config write preserves existing sections and user values ([4032dc4](https://github.com/Kodaskills/zellig/commit/4032dc4c54971379dc2bb9f81e3d3c9e73a420a8))
+* 🐛 no local feature on Windows ([b03ea66](https://github.com/Kodaskills/zellig/commit/b03ea66f7b6dc34291aae96c6b17ccb133fb2014))
+
 ## 0.1.0 (2026-05-14)
 
 
