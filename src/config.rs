@@ -522,10 +522,14 @@ impl ConfigLoader {
             figment = merge_config_file(figment, std::path::Path::new(path));
         } else {
             let candidates = [
-                "zellig.toml", "zelling.toml",
-                "zellig.json", "zelling.json",
-                "zellig.yaml", "zelling.yaml",
-                "zellig.yml",  "zelling.yml",
+                "zellig.toml",
+                "zelling.toml",
+                "zellig.json",
+                "zelling.json",
+                "zellig.yaml",
+                "zelling.yaml",
+                "zellig.yml",
+                "zelling.yml",
             ];
             for name in &candidates {
                 let p = std::path::Path::new(name);

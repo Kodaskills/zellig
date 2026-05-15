@@ -52,6 +52,7 @@ jobs:
             use_zigbuild: false
             container: "nvidia/cuda:12.6.3-devel-ubuntu22.04"
             features: cuda
+            cuda_version: ""
           # macOS: CUDA not available on Apple hardware → CPU/DNNL only.
           - os: macos-15-intel
             target: x86_64-apple-darwin
@@ -59,18 +60,23 @@ jobs:
             use_zigbuild: false
             container: ""
             features: local
+            cuda_version: ""
           - os: macos-latest
             target: aarch64-apple-darwin
             artifact: zellig-macos-aarch64.tar.gz
             use_zigbuild: false
             container: ""
             features: local
+            cuda_version: ""
+          # Windows: CUDA toolkit installed at build time via Jimver action;
+          # cuda-dynamic-loading so the binary runs on CPU-only machines too.
           - os: windows-latest
             target: x86_64-pc-windows-msvc
             artifact: zellig-windows-x86_64.zip
             use_zigbuild: false
             container: ""
-            features: local
+            features: cuda
+            cuda_version: "12.6.2"
 
     steps:
       - uses: actions/checkout@v6
@@ -105,6 +111,14 @@ jobs:
           brew install cmake
           rustup show
           echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
+      - name: Install CUDA toolkit (Windows)
+        if: runner.os == 'Windows'
+        uses: Jimver/cuda-toolkit@v0.2.19
+        with:
+          cuda: ${{ matrix.cuda_version }}
+          method: network
+          sub-packages: '["nvcc", "cudart", "cublas", "cublas_dev", "thrust"]'
 
       - name: Install cargo-zigbuild (Linux)
         if: matrix.use_zigbuild

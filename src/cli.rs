@@ -176,7 +176,11 @@ async fn handle_translate(
                         "{}  {}{}",
                         lang,
                         output::elapsed(elapsed.as_secs_f64()),
-                        if device.is_empty() { String::new() } else { format!("  {}", output::dim(device)) },
+                        if device.is_empty() {
+                            String::new()
+                        } else {
+                            format!("  {}", output::dim(device))
+                        },
                     ));
                 }
                 Err(e) => output::err(format!("{}: {}", lang, e)),
@@ -259,7 +263,11 @@ async fn handle_batch_translate(
         let elapsed = start.elapsed();
 
         let device = service.translator.device_label();
-        let device_suffix = if device.is_empty() { String::new() } else { format!("  {}", output::dim(device)) };
+        let device_suffix = if device.is_empty() {
+            String::new()
+        } else {
+            format!("  {}", output::dim(device))
+        };
         if let Some(ref out_path) = output {
             let mut output_text = String::new();
             for result in &results {

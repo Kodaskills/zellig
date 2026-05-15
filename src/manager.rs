@@ -207,7 +207,7 @@ fn detect_compute_type(repo: &str) -> Option<&'static str> {
 }
 
 pub(crate) fn set_model_in_config(config_path: &std::path::Path, repo: &str) -> Result<()> {
-    use toml_edit::{DocumentMut, value, Item, Table};
+    use toml_edit::{value, DocumentMut, Item, Table};
 
     let content = if config_path.exists() {
         std::fs::read_to_string(config_path)
@@ -216,9 +216,7 @@ pub(crate) fn set_model_in_config(config_path: &std::path::Path, repo: &str) -> 
         String::new()
     };
 
-    let mut doc: DocumentMut = content
-        .parse()
-        .unwrap_or_default();
+    let mut doc: DocumentMut = content.parse().unwrap_or_default();
 
     doc["mode"] = value("local");
 
@@ -232,9 +230,8 @@ pub(crate) fn set_model_in_config(config_path: &std::path::Path, repo: &str) -> 
 
     // Always update model_repo and compute_type — both are coupled to the model.
     local["model_repo"] = value(repo);
-    local["compute_type"] = value(
-        detect_compute_type(repo).unwrap_or(defaults.compute_type.as_str()),
-    );
+    local["compute_type"] =
+        value(detect_compute_type(repo).unwrap_or(defaults.compute_type.as_str()));
 
     // Fill in missing fields with defaults — never overwrite user values.
     macro_rules! set_default {

@@ -86,7 +86,10 @@ pub(crate) mod ct2_backend {
     use super::*;
     use ct2rs::tokenizers::auto::Tokenizer;
     use ct2rs::{BatchType, ComputeType, Config as Ct2Config, Translator as CT2Translator};
-    use std::sync::{Arc, Mutex, atomic::{AtomicBool, Ordering}};
+    use std::sync::{
+        atomic::{AtomicBool, Ordering},
+        Arc, Mutex,
+    };
 
     fn parse_compute_type(s: &str) -> ComputeType {
         match s {
@@ -190,7 +193,7 @@ pub(crate) mod ct2_backend {
                     );
                     let cpu = self.rebuild_cpu_translator()?;
                     *self.translator.lock().unwrap() = Arc::clone(&cpu);
-                    f(&cpu).map_err(|e| ZelligError::TranslationError(e))
+                    f(&cpu).map_err(ZelligError::TranslationError)
                 }
                 Err(e) => Err(ZelligError::TranslationError(e)),
             }
@@ -214,10 +217,9 @@ pub(crate) mod ct2_backend {
                 no_repeat_ngram_size: self.no_repeat_ngram_size,
                 ..Default::default()
             };
-            let input_ref = input.clone();
             let results = self.with_fallback(|t| {
                 t.translate_batch_with_target_prefix(
-                    &[input_ref.clone()],
+                    std::slice::from_ref(&input),
                     &target_prefixes,
                     &opts,
                     None,
@@ -252,13 +254,8 @@ pub(crate) mod ct2_backend {
                 ..Default::default()
             };
             let results = self.with_fallback(|t| {
-                t.translate_batch_with_target_prefix(
-                    &inputs,
-                    &target_prefixes,
-                    &opts,
-                    None,
-                )
-                .map_err(|e| e.to_string())
+                t.translate_batch_with_target_prefix(&inputs, &target_prefixes, &opts, None)
+                    .map_err(|e| e.to_string())
             })?;
             Ok(results.into_iter().map(|(t, _)| clean_unk(&t)).collect())
         }
@@ -266,7 +263,11 @@ pub(crate) mod ct2_backend {
 
     impl LocalBackend for Ct2Model {
         fn device_label(&self) -> &str {
-            if self.is_cuda.load(Ordering::Relaxed) { "cuda" } else { "cpu" }
+            if self.is_cuda.load(Ordering::Relaxed) {
+                "cuda"
+            } else {
+                "cpu"
+            }
         }
 
         fn translate(&self, text: &str, source_lang: &str, target_lang: &str) -> Result<String> {
