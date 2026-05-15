@@ -36,6 +36,10 @@ impl LocalTranslator {
 }
 
 impl Translator for LocalTranslator {
+    fn device_label(&self) -> &str {
+        self.backend.device_label()
+    }
+
     fn translate<'a>(
         &'a self,
         text: &'a str,
@@ -82,11 +86,34 @@ pub(crate) mod ct2_backend {
     use super::*;
     use ct2rs::tokenizers::auto::Tokenizer;
     use ct2rs::{BatchType, ComputeType, Config as Ct2Config, Translator as CT2Translator};
-    use std::sync::Arc;
+    use std::sync::{Arc, Mutex, atomic::{AtomicBool, Ordering}};
 
-    #[derive(Clone)]
+    fn parse_compute_type(s: &str) -> ComputeType {
+        match s {
+            "DEFAULT" => ComputeType::DEFAULT,
+            "AUTO" => ComputeType::AUTO,
+            "FLOAT32" => ComputeType::FLOAT32,
+            "INT8" => ComputeType::INT8,
+            "INT8_FLOAT32" => ComputeType::INT8_FLOAT32,
+            "INT8_FLOAT16" => ComputeType::INT8_FLOAT16,
+            "INT8_BFLOAT16" => ComputeType::INT8_BFLOAT16,
+            "INT16" => ComputeType::INT16,
+            "FLOAT16" => ComputeType::FLOAT16,
+            "BFLOAT16" => ComputeType::BFLOAT16,
+            _ => ComputeType::DEFAULT,
+        }
+    }
+
+    fn is_cuda_lib_error(msg: &str) -> bool {
+        msg.contains("cannot be loaded") || msg.contains("libcublas") || msg.contains("libcudart")
+    }
+
     pub struct Ct2Model {
-        pub translator: Arc<CT2Translator<Tokenizer>>,
+        translator: Mutex<Arc<CT2Translator<Tokenizer>>>,
+        model_dir: std::path::PathBuf,
+        compute_type_str: String,
+        num_threads: usize,
+        is_cuda: Arc<AtomicBool>,
         beam_size: usize,
         max_decoding_length: usize,
         repetition_penalty: f32,
@@ -96,45 +123,77 @@ pub(crate) mod ct2_backend {
     impl Ct2Model {
         pub async fn new(config: &LocalConfig) -> Result<Self> {
             let model_dir = download_model(config).await?;
-            let device = {
+            let (device, using_cuda) = {
                 #[cfg(feature = "cuda")]
                 {
                     match config.device.to_lowercase().as_str() {
                         "cuda" => {
                             if ct2rs::sys::get_device_count(ct2rs::Device::CUDA) > 0 {
-                                ct2rs::Device::CUDA
+                                (ct2rs::Device::CUDA, true)
                             } else {
                                 eprintln!("warning: no CUDA devices found, falling back to CPU");
-                                ct2rs::Device::CPU
+                                (ct2rs::Device::CPU, false)
                             }
                         }
-                        _ => ct2rs::Device::CPU,
+                        _ => (ct2rs::Device::CPU, false),
                     }
                 }
                 #[cfg(not(feature = "cuda"))]
-                ct2rs::Device::CPU
+                (ct2rs::Device::CPU, false)
             };
             let ct2_config = Ct2Config {
                 device,
-                compute_type: match config.compute_type.as_str() {
-                    "INT8" => ComputeType::INT8,
-                    "FLOAT32" => ComputeType::FLOAT32,
-                    "FLOAT16" => ComputeType::FLOAT16,
-                    _ => ComputeType::INT8,
-                },
+                compute_type: parse_compute_type(&config.compute_type),
                 num_threads_per_replica: config.num_threads,
                 ..Default::default()
             };
+            let translator = CT2Translator::new(model_dir.to_str().unwrap(), &ct2_config)
+                .map_err(|e| ZelligError::ModelError(e.to_string()))?;
             Ok(Self {
-                translator: Arc::new(
-                    CT2Translator::new(model_dir.to_str().unwrap(), &ct2_config)
-                        .map_err(|e| ZelligError::ModelError(e.to_string()))?,
-                ),
+                translator: Mutex::new(Arc::new(translator)),
+                model_dir,
+                compute_type_str: config.compute_type.clone(),
+                num_threads: config.num_threads,
+                is_cuda: Arc::new(AtomicBool::new(using_cuda)),
                 beam_size: config.beam_size,
                 max_decoding_length: config.max_decoding_length,
                 repetition_penalty: config.repetition_penalty,
                 no_repeat_ngram_size: config.no_repeat_ngram_size,
             })
+        }
+
+        fn rebuild_cpu_translator(&self) -> Result<Arc<CT2Translator<Tokenizer>>> {
+            let cpu_config = Ct2Config {
+                device: ct2rs::Device::CPU,
+                compute_type: parse_compute_type(&self.compute_type_str),
+                num_threads_per_replica: self.num_threads,
+                ..Default::default()
+            };
+            let t = CT2Translator::new(self.model_dir.to_str().unwrap(), &cpu_config)
+                .map(Arc::new)
+                .map_err(|e| ZelligError::ModelError(format!("CPU fallback failed: {}", e)))?;
+            self.is_cuda.store(false, Ordering::Relaxed);
+            Ok(t)
+        }
+
+        fn with_fallback<F, T>(&self, f: F) -> Result<T>
+        where
+            F: Fn(&Arc<CT2Translator<Tokenizer>>) -> std::result::Result<T, String>,
+        {
+            let translator = self.translator.lock().unwrap().clone();
+            match f(&translator) {
+                Ok(v) => Ok(v),
+                Err(e) if is_cuda_lib_error(&e) => {
+                    eprintln!(
+                        "warning: CUDA library unavailable ({}), falling back to CPU",
+                        e
+                    );
+                    let cpu = self.rebuild_cpu_translator()?;
+                    *self.translator.lock().unwrap() = Arc::clone(&cpu);
+                    f(&cpu).map_err(|e| ZelligError::TranslationError(e))
+                }
+                Err(e) => Err(ZelligError::TranslationError(e)),
+            }
         }
 
         pub fn translate_with_beam(
@@ -148,21 +207,23 @@ pub(crate) mod ct2_backend {
             let target_prefixes = vec![vec![target_lang.to_string()]];
             let max_len =
                 compute_max_decoding_length(std::slice::from_ref(&input), self.max_decoding_length);
-            let results = self
-                .translator
-                .translate_batch_with_target_prefix(
-                    &[input],
+            let opts = ct2rs::TranslationOptions {
+                beam_size,
+                max_decoding_length: max_len,
+                repetition_penalty: self.repetition_penalty,
+                no_repeat_ngram_size: self.no_repeat_ngram_size,
+                ..Default::default()
+            };
+            let input_ref = input.clone();
+            let results = self.with_fallback(|t| {
+                t.translate_batch_with_target_prefix(
+                    &[input_ref.clone()],
                     &target_prefixes,
-                    &ct2rs::TranslationOptions {
-                        beam_size,
-                        max_decoding_length: max_len,
-                        repetition_penalty: self.repetition_penalty,
-                        no_repeat_ngram_size: self.no_repeat_ngram_size,
-                        ..Default::default()
-                    },
+                    &opts,
                     None,
                 )
-                .map_err(|e| ZelligError::TranslationError(e.to_string()))?;
+                .map_err(|e| e.to_string())
+            })?;
             Ok(clean_unk(&results[0].0))
         }
 
@@ -181,28 +242,33 @@ pub(crate) mod ct2_backend {
                 .map(|_| vec![target_lang.to_string()])
                 .collect();
             let max_len = compute_max_decoding_length(texts, self.max_decoding_length);
-            let results = self
-                .translator
-                .translate_batch_with_target_prefix(
+            let opts = ct2rs::TranslationOptions {
+                beam_size,
+                max_decoding_length: max_len,
+                max_batch_size: 64,
+                batch_type: BatchType::Examples,
+                repetition_penalty: self.repetition_penalty,
+                no_repeat_ngram_size: self.no_repeat_ngram_size,
+                ..Default::default()
+            };
+            let results = self.with_fallback(|t| {
+                t.translate_batch_with_target_prefix(
                     &inputs,
                     &target_prefixes,
-                    &ct2rs::TranslationOptions {
-                        beam_size,
-                        max_decoding_length: max_len,
-                        max_batch_size: 64,
-                        batch_type: BatchType::Examples,
-                        repetition_penalty: self.repetition_penalty,
-                        no_repeat_ngram_size: self.no_repeat_ngram_size,
-                        ..Default::default()
-                    },
+                    &opts,
                     None,
                 )
-                .map_err(|e| ZelligError::TranslationError(e.to_string()))?;
+                .map_err(|e| e.to_string())
+            })?;
             Ok(results.into_iter().map(|(t, _)| clean_unk(&t)).collect())
         }
     }
 
     impl LocalBackend for Ct2Model {
+        fn device_label(&self) -> &str {
+            if self.is_cuda.load(Ordering::Relaxed) { "cuda" } else { "cpu" }
+        }
+
         fn translate(&self, text: &str, source_lang: &str, target_lang: &str) -> Result<String> {
             self.translate_with_beam(text, source_lang, target_lang, self.beam_size)
         }

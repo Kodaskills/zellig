@@ -36,6 +36,7 @@ pub use youdao::YoudaoTranslator;
 
 pub(crate) trait LocalBackend: Send + Sync {
     fn translate(&self, text: &str, source_lang: &str, target_lang: &str) -> Result<String>;
+    fn device_label(&self) -> &str { "cpu" }
 
     fn batch_translate(
         &self,
@@ -52,6 +53,8 @@ pub(crate) trait LocalBackend: Send + Sync {
 }
 
 pub trait Translator: Send + Sync {
+    fn device_label(&self) -> &str { "" }
+
     fn translate<'a>(
         &'a self,
         text: &'a str,

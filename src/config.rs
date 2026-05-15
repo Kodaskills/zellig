@@ -1,6 +1,6 @@
 use crate::error::{Result, ZelligError};
 use figment2::{
-    providers::{Env, Format, Serialized, Toml},
+    providers::{Env, Format, Json, Serialized, Toml, Yaml},
     Figment,
 };
 use serde::{Deserialize, Serialize};
@@ -504,6 +504,14 @@ impl Default for TranslationConfig {
 
 // ── Loader ───────────────────────────────────────────────
 
+fn merge_config_file(figment: Figment, path: &std::path::Path) -> Figment {
+    match path.extension().and_then(|e| e.to_str()) {
+        Some("json") => figment.merge(Json::file(path)),
+        Some("yaml") | Some("yml") => figment.merge(Yaml::file(path)),
+        _ => figment.merge(Toml::file(path)),
+    }
+}
+
 pub struct ConfigLoader;
 
 impl ConfigLoader {
@@ -511,7 +519,21 @@ impl ConfigLoader {
         let mut figment = Figment::new().merge(Serialized::defaults(Config::default()));
 
         if let Some(path) = config_path {
-            figment = figment.merge(Toml::file(path));
+            figment = merge_config_file(figment, std::path::Path::new(path));
+        } else {
+            let candidates = [
+                "zellig.toml", "zelling.toml",
+                "zellig.json", "zelling.json",
+                "zellig.yaml", "zelling.yaml",
+                "zellig.yml",  "zelling.yml",
+            ];
+            for name in &candidates {
+                let p = std::path::Path::new(name);
+                if p.exists() {
+                    figment = merge_config_file(figment, p);
+                    break;
+                }
+            }
         }
 
         figment = figment.merge(Env::prefixed("ZELLIG_").split("_"));

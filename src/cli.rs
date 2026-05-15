@@ -11,6 +11,13 @@ use futures::future::{join_all, try_join_all};
 use indicatif::{ProgressBar, ProgressStyle};
 use std::sync::Arc;
 
+#[derive(Debug, Clone, clap::ValueEnum)]
+pub enum ConfigFormat {
+    Toml,
+    Json,
+    Yaml,
+}
+
 #[derive(Parser)]
 #[command(name = "zellig")]
 #[command(about = "Auto Translation CLI tool locally with NLLB or with AI support", long_about = None)]
@@ -63,8 +70,9 @@ pub enum Commands {
         mode: Option<TranslationMode>,
     },
     Config {
-        #[arg(long)]
-        generate: bool,
+        #[arg(long, value_enum, default_missing_value = "toml", num_args = 0..=1,
+              help = "Generate example config (toml, json, yaml)")]
+        generate: Option<ConfigFormat>,
     },
     Languages,
     #[command(about = "Launch interactive TUI mode")]
@@ -159,14 +167,16 @@ async fn handle_translate(
         }))
         .await;
 
+        let device = service.translator.device_label();
         for (lang, result, elapsed) in results {
             match result {
                 Ok(text) => {
                     println!("{}", text);
                     output::info(format!(
-                        "{}  {}",
+                        "{}  {}{}",
                         lang,
-                        output::elapsed(elapsed.as_secs_f64())
+                        output::elapsed(elapsed.as_secs_f64()),
+                        if device.is_empty() { String::new() } else { format!("  {}", output::dim(device)) },
                     ));
                 }
                 Err(e) => output::err(format!("{}: {}", lang, e)),
@@ -248,6 +258,8 @@ async fn handle_batch_translate(
 
         let elapsed = start.elapsed();
 
+        let device = service.translator.device_label();
+        let device_suffix = if device.is_empty() { String::new() } else { format!("  {}", output::dim(device)) };
         if let Some(ref out_path) = output {
             let mut output_text = String::new();
             for result in &results {
@@ -255,9 +267,10 @@ async fn handle_batch_translate(
             }
             std::fs::write(out_path, output_text).map_err(ZelligError::IoError)?;
             output::ok(format!(
-                "{} written  {}",
+                "{} written  {}{}",
                 output::bold(target_lang),
-                output::elapsed(elapsed.as_secs_f64())
+                output::elapsed(elapsed.as_secs_f64()),
+                device_suffix,
             ));
             output::info(format!("Saved to {}", out_path));
         } else {
@@ -265,10 +278,11 @@ async fn handle_batch_translate(
                 println!("[{}] {}", target_lang, result);
             }
             output::ok(format!(
-                "{}  {} strings  {}",
+                "{}  {} strings  {}{}",
                 output::bold(target_lang),
                 results.len(),
-                output::elapsed(elapsed.as_secs_f64())
+                output::elapsed(elapsed.as_secs_f64()),
+                device_suffix,
             ));
         }
 
@@ -310,9 +324,16 @@ async fn handle_detect(
     Ok(())
 }
 
-fn handle_config(config: Config, generate: bool) -> Result<()> {
-    if generate {
-        println!("{}", crate::config::generate_example_config());
+fn handle_config(config: Config, generate: Option<ConfigFormat>) -> Result<()> {
+    if let Some(fmt) = generate {
+        let out = match fmt {
+            ConfigFormat::Toml => crate::config::generate_example_config(),
+            ConfigFormat::Json => serde_json::to_string_pretty(&crate::config::Config::default())
+                .map_err(|e| ZelligError::ConfigError(e.to_string()))?,
+            ConfigFormat::Yaml => serde_yaml::to_string(&crate::config::Config::default())
+                .map_err(|e| ZelligError::ConfigError(e.to_string()))?,
+        };
+        println!("{}", out);
         return Ok(());
     }
     eprintln!();

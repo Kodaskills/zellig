@@ -185,7 +185,30 @@ pub(crate) fn resolve_config_path(config_flag: Option<&str>) -> PathBuf {
     PathBuf::from("zellig.toml")
 }
 
+fn detect_compute_type(repo: &str) -> Option<&'static str> {
+    let lower = repo.to_lowercase();
+    if lower.contains("int8_float16") || lower.contains("int8-float16") {
+        Some("INT8_FLOAT16")
+    } else if lower.contains("int8_bfloat16") || lower.contains("int8-bfloat16") {
+        Some("INT8_BFLOAT16")
+    } else if lower.contains("float16") {
+        Some("FLOAT16")
+    } else if lower.contains("bfloat16") {
+        Some("BFLOAT16")
+    } else if lower.contains("float32") {
+        Some("FLOAT32")
+    } else if lower.contains("int16") {
+        Some("INT16")
+    } else if lower.contains("int8") {
+        Some("INT8")
+    } else {
+        None
+    }
+}
+
 pub(crate) fn set_model_in_config(config_path: &std::path::Path, repo: &str) -> Result<()> {
+    use toml_edit::{DocumentMut, value, Item, Table};
+
     let content = if config_path.exists() {
         std::fs::read_to_string(config_path)
             .map_err(|e| ZelligError::ConfigError(format!("Failed to read config: {}", e)))?
@@ -193,31 +216,43 @@ pub(crate) fn set_model_in_config(config_path: &std::path::Path, repo: &str) -> 
         String::new()
     };
 
-    let mut doc: toml::Value = content
+    let mut doc: DocumentMut = content
         .parse()
-        .unwrap_or(toml::Value::Table(toml::map::Map::new()));
+        .unwrap_or_default();
 
-    let table = doc
-        .as_table_mut()
-        .ok_or_else(|| ZelligError::ConfigError("config root is not a TOML table".into()))?;
+    doc["mode"] = value("local");
 
-    let local = table
-        .entry("local")
-        .or_insert(toml::Value::Table(toml::map::Map::new()));
+    let defaults = crate::config::LocalConfig::default();
 
-    if let toml::Value::Table(t) = local {
-        t.insert(
-            "model_repo".to_string(),
-            toml::Value::String(repo.to_string()),
-        );
-        t.insert(
-            "model_format".to_string(),
-            toml::Value::String("ct2".to_string()),
-        );
+    // Ensure [local] table exists; preserve all existing keys.
+    if !doc.contains_table("local") {
+        doc["local"] = Item::Table(Table::new());
     }
+    let local = doc["local"].as_table_mut().unwrap();
 
-    let out = toml::to_string_pretty(&doc)
-        .map_err(|e| ZelligError::ConfigError(format!("Failed to serialize config: {}", e)))?;
+    // Always update model_repo and compute_type — both are coupled to the model.
+    local["model_repo"] = value(repo);
+    local["compute_type"] = value(
+        detect_compute_type(repo).unwrap_or(defaults.compute_type.as_str()),
+    );
+
+    // Fill in missing fields with defaults — never overwrite user values.
+    macro_rules! set_default {
+        ($key:literal, $val:expr) => {
+            if !local.contains_key($key) {
+                local[$key] = value($val);
+            }
+        };
+    }
+    set_default!("model_format", defaults.model_format.as_str());
+    set_default!("device", defaults.device.as_str());
+    set_default!("beam_size", defaults.beam_size as i64);
+    set_default!("max_decoding_length", defaults.max_decoding_length as i64);
+    set_default!("num_threads", defaults.num_threads as i64);
+    set_default!("repetition_penalty", defaults.repetition_penalty as f64);
+    set_default!("no_repeat_ngram_size", defaults.no_repeat_ngram_size as i64);
+
+    let out = doc.to_string();
 
     std::fs::write(config_path, out)
         .map_err(|e| ZelligError::ConfigError(format!("Failed to write config: {}", e)))?;
