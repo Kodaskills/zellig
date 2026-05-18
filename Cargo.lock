@@ -530,9 +530,9 @@ dependencies = [
 
 [[package]]
 name = "ct2rs"
-version = "0.9.17"
+version = "0.9.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "616201b950832f4dd5fe95fd34fb557e3187233641235a5bb98f9432fe513bb1"
+checksum = "7b5693eb65909bc89023b2844268ff8f95b29d99fd64a2b7eb5d2aa1e3aba11f"
 dependencies = [
  "anyhow",
  "cmake",
