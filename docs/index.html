@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <script>!function(){var t=localStorage.getItem('theme')||'system';document.documentElement.setAttribute('data-theme',t==='dark'||t==='system'&&matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light')}()</script>
   <!-- Google Tag Manager -->
-  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NX4PHTVQ');</script>
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-5X4ZFBRP');</script>
   <!-- End Google Tag Manager -->
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Zellig — translate anything, locally</title>
@@ -33,7 +33,7 @@
 <!-- ────────────── nav ────────────── -->
 <nav class="nav">
   <div class="nav__inner">
-    <a class="brand" href="#top">
+     <a class="brand" href="#top" data-analytics="click_zellig_logo">
       <span class="brand__mark">
         <svg viewBox="0 0 867 913" aria-hidden="true">
           <path d="M1.82,472.741l0,-313.328l148.419,-159.413l714.608,0l0,274.849l-401.28,417.771l-159.413,0l445.256,-456.25l0,-126.431l-544.202,0l-87.952,93.449l148.419,0l-263.855,269.352" />
@@ -44,24 +44,24 @@
       <span class="brand__ver">v0.1.0</span>
     </a>
     <div class="nav__links">
-      <a href="#features">Features</a>
-      <a href="#backends">Backends</a>
-      <a href="#modes">Modes</a>
-      <a href="#roadmap">Roadmap</a>
-      <a href="#faq">FAQ</a>
+      <a href="#features" data-analytics="click_features">Features</a>
+      <a href="#backends" data-analytics="click_backends">Backends</a>
+      <a href="#modes" data-analytics="click_modes">Modes</a>
+      <a href="#roadmap" data-analytics="click_roadmaps">Roadmap</a>
+      <a href="#faq" data-analytics="click_faq">FAQ</a>
     </div>
     <div class="nav__spacer"></div>
     <div class="nav__cta">
-      <button class="theme-btn" id="theme-btn" data-mode="system" aria-label="Theme: system" title="Theme: system">
+      <button class="theme-btn" id="theme-btn" data-mode="system" aria-label="Theme: system" title="Theme: system" data-analytics="click_theme_toggle">
         <svg class="theme-icon theme-icon--system" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="2" y="3" width="16" height="11" rx="2"/><path d="M7 18h6M10 14v4"/></svg>
         <svg class="theme-icon theme-icon--light" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10" cy="10" r="3.5"/><path d="M10 2v1.5M10 16.5V18M2 10h1.5M16.5 10H18M4.1 4.1l1.06 1.06M14.85 14.85l1.06 1.06M4.1 15.9l1.06-1.06M14.85 5.15l1.06-1.06"/></svg>
         <svg class="theme-icon theme-icon--dark" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M17.5 11.5A7.5 7.5 0 1 1 8.5 2.5a5.5 5.5 0 0 0 9 9z"/></svg>
       </button>
-      <a class="btn btn--ghost" href="https://github.com/kodaskills/zellig" target="_blank" rel="noreferrer">
+      <a class="btn btn--ghost" href="https://github.com/kodaskills/zellig" target="_blank" rel="noreferrer" data-analytics="click_star_github">
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.1.79-.25.79-.55v-2.1c-3.2.7-3.88-1.36-3.88-1.36-.52-1.33-1.28-1.68-1.28-1.68-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.73-1.54-2.55-.29-5.24-1.27-5.24-5.66 0-1.25.45-2.27 1.18-3.07-.12-.29-.51-1.45.11-3.02 0 0 .97-.31 3.18 1.17a11 11 0 0 1 5.79 0c2.21-1.48 3.18-1.17 3.18-1.17.62 1.57.23 2.73.11 3.02.74.8 1.18 1.82 1.18 3.07 0 4.4-2.69 5.36-5.25 5.65.41.36.77 1.07.77 2.15v3.19c0 .31.21.66.8.55C20.21 21.39 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5Z"/></svg>
         Star
       </a>
-      <a class="btn btn--primary" href="#install">
+      <a class="btn btn--primary" href="#install" data-analytics="click_install">
         Install
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
       </a>
@@ -89,7 +89,7 @@
         <div class="install" id="install">
           <span class="install__prompt">$</span>
           <span class="install__cmd" id="install-cmd">curl -fsSL https://raw.githubusercontent.com/kodaskills/zellig/main/install.sh | sh</span>
-          <button class="install__copy" id="install-copy-btn">
+          <button class="install__copy" id="install-copy-btn" data-analytics="click_install_copy">
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4.5" y="4.5" width="8" height="9" rx="1.5"/><path d="M9 1.5H3a1.5 1.5 0 0 0-1.5 1.5v7"/></svg>
             copy
           </button>
@@ -114,10 +114,10 @@
             </div>
             <div class="term__title" id="term-title">~/projects/site — zellig</div>
             <div class="term__tabs" id="term-tabs">
-              <button class="term__tab is-active" data-scene="0">text</button>
-              <button class="term__tab" data-scene="1">file</button>
-              <button class="term__tab" data-scene="2">directory</button>
-              <button class="term__tab" data-scene="3">interactive</button>
+              <button class="term__tab is-active" data-scene="0" data-analytics="click_text_toggle">text</button>
+              <button class="term__tab" data-scene="1" data-analytics="click_file_toggle">file</button>
+              <button class="term__tab" data-scene="2" data-analytics="click_directory_toggle">directory</button>
+              <button class="term__tab" data-scene="3" data-analytics="click_interactive_toggle">interactive</button>
             </div>
           </div>
           <div class="term__body" id="term-body"></div>
@@ -133,7 +133,7 @@
 </div>
 
 <!-- ────────────── features ────────────── -->
-<section class="section" id="features">
+<section class="section" id="features" data-analytics-section="features_section">
   <div class="wrap">
     <div class="section-head">
       <span class="eyebrow">What it does</span>
@@ -170,7 +170,7 @@
 </section>
 
 <!-- ────────────── formats ────────────── -->
-<section class="section section--tight">
+<section class="section section--tight" data-analytics-section="formats_section">
   <div class="wrap">
     <div class="section-head">
       <span class="eyebrow">Formats</span>
@@ -212,7 +212,7 @@
 </section>
 
 <!-- ────────────── backends ────────────── -->
-<section class="section section--alt" id="backends">
+<section class="section section--alt" id="backends" data-analytics-section="backends_section">
   <div class="wrap">
     <div class="section-head section-head--row">
       <div class="section-head__r">
@@ -271,7 +271,7 @@
 </section>
 
 <!-- ────────────── modes ────────────── -->
-<section class="section section--tight" id="modes">
+<section class="section section--tight" id="modes" data-analytics-section="modes_section">
   <div class="wrap">
     <div class="section-head">
       <span class="eyebrow">Two modes</span>
@@ -335,7 +335,7 @@ $ zellig translate --dir ./locales \
 </section>
 
 <!-- ────────────── benchmarks ────────────── -->
-<section class="section">
+<section class="section" data-analytics-section="benchmarks_section">
   <div class="wrap">
     <div class="section-head">
       <span class="eyebrow">Numbers</span>
@@ -367,7 +367,7 @@ $ zellig translate --dir ./locales \
 </section>
 
 <!-- ────────────── roadmap ────────────── -->
-<section class="section section--alt" id="roadmap">
+<section class="section section--alt" id="roadmap" data-analytics-section="roadmap_section">
   <div class="wrap">
     <div class="roadmap">
       <div>
@@ -426,7 +426,7 @@ $ zellig translate --dir ./locales \
 </section>
 
 <!-- ────────────── community ────────────── -->
-<section class="section">
+<section class="section" data-analytics-section="community_section">
   <div class="wrap">
     <div class="section-head">
       <span class="eyebrow">Community</span>
@@ -441,11 +441,11 @@ $ zellig translate --dir ./locales \
           <p class="commu__desc">Zellig is MIT-licensed and developed in the open at <code>github.com/kodaskills/zellig</code>.<br>Issues, pull requests, and backend plugins all welcome.</p>
         </div>
         <div class="commu__actions">
-          <a class="btn btn--primary" href="https://github.com/kodaskills/zellig" target="_blank" rel="noreferrer">
+          <a class="btn btn--primary" href="https://github.com/kodaskills/zellig" target="_blank" rel="noreferrer" data-analytics="click_view_on_github">
             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.1.79-.25.79-.55v-2.1c-3.2.7-3.88-1.36-3.88-1.36-.52-1.33-1.28-1.68-1.28-1.68-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.73-1.54-2.55-.29-5.24-1.27-5.24-5.66 0-1.25.45-2.27 1.18-3.07-.12-.29-.51-1.45.11-3.02 0 0 .97-.31 3.18 1.17a11 11 0 0 1 5.79 0c2.21-1.48 3.18-1.17 3.18-1.17.62 1.57.23 2.73.11 3.02.74.8 1.18 1.82 1.18 3.07 0 4.4-2.69 5.36-5.25 5.65.41.36.77 1.07.77 2.15v3.19c0 .31.21.66.8.55C20.21 21.39 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5Z"/></svg>
             View on GitHub
           </a>
-          <a class="btn" href="https://github.com/kodaskills/zellig#cli-translation-tool--text-files-and-directories--local-ai-or-cloud-apis" target="_blank" rel="noreferrer">
+          <a class="btn" href="https://github.com/kodaskills/zellig#cli-translation-tool--text-files-and-directories--local-ai-or-cloud-apis" target="_blank" rel="noreferrer" data-analytics="click_read_the_docs">
             Read the docs
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
           </a>
@@ -462,15 +462,15 @@ $ zellig translate --dir ./locales \
           <li>Improve the documentation</li>
         </ul>
         <div class="commu__actions">
-          <a class="btn" href="https://github.com/kodaskills/zellig/compare" target="_blank" rel="noreferrer">
+          <a class="btn" href="https://github.com/kodaskills/zellig/compare" target="_blank" rel="noreferrer" data-analytics="click_open_pr">
             Open a PR
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
           </a>
-          <a class="btn" href="https://github.com/Kodaskills/zellig/issues/new?template=feature_request.yml" target="_blank" rel="noreferrer">
+          <a class="btn" href="https://github.com/Kodaskills/zellig/issues/new?template=feature_request.yml" target="_blank" rel="noreferrer" data-analytics="click_feature_request">
             Feature request
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
           </a>
-          <a class="btn" href="https://github.com/Kodaskills/zellig/issues/new?template=bug_report.yml" target="_blank" rel="noreferrer">
+          <a class="btn" href="https://github.com/Kodaskills/zellig/issues/new?template=bug_report.yml" target="_blank" rel="noreferrer" data-analytics="click_bug_report">
             Bug report
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
           </a>
@@ -481,7 +481,7 @@ $ zellig translate --dir ./locales \
 </section>
 
 <!-- ────────────── faq ────────────── -->
-<section class="section section--alt" id="faq">
+<section class="section section--alt" id="faq" data-analytics-section="faq_section">
   <div class="wrap">
     <div class="section-head">
       <span class="eyebrow">Common questions</span>
@@ -489,42 +489,42 @@ $ zellig translate --dir ./locales \
     </div>
     <div class="faq">
       <div class="faq__item is-open">
-        <button class="faq__q">
+        <button class="faq__q" data-analytics="click_offline_backend">
           <span>Does the local backend really run offline?</span>
           <span class="faq__plus"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 3v10M3 8h10"/></svg></span>
         </button>
         <p class="faq__a">Yes. Zellig runs NLLB-200 (600M, 1.3B, 3.3B) on-device via <code>ct2rs</code> / CTranslate2. After the first <code>zellig models --download JustFrederik/nllb-200-distilled-600M-ct2-int8</code>, everything happens on your machine — no network calls, no telemetry. For GPU acceleration, build with <code>--features cuda</code> and set <code>device = "cuda"</code> in <code>[local]</code> — the same binary runs on CPU-only machines too. Output quality can be tuned with <code>repetition_penalty</code> and <code>no_repeat_ngram_size</code> in your config.</p>
       </div>
       <div class="faq__item">
-        <button class="faq__q">
+        <button class="faq__q" data-analytics="click_handle_translations">
           <span>How does it handle existing translations?</span>
           <span class="faq__plus"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 3v10M3 8h10"/></svg></span>
         </button>
         <p class="faq__a">By default, Zellig is conservative. Existing <code>msgstr</code>s, populated XLIFF targets, and already-localized JSON keys are skipped.</p>
       </div>
       <div class="faq__item">
-        <button class="faq__q">
+        <button class="faq__q" data-analytics="click_custom_backend">
           <span>Can I plug in a custom backend?</span>
           <span class="faq__plus"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 3v10M3 8h10"/></svg></span>
         </button>
         <p class="faq__a">Yes — implement the <code>Translator</code> trait in Rust (around 60 lines) and wire it into your config. The plugin interface is stable and well-documented.</p>
       </div>
       <div class="faq__item">
-        <button class="faq__q">
+        <button class="faq__q" data-analytics="click_production_ready">
           <span>Is this production-ready?</span>
           <span class="faq__plus"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 3v10M3 8h10"/></svg></span>
         </button>
         <p class="faq__a">Zellig is at 0.1.x — early but functional. The CLI surface and file-format adapters are working; LLM prompts and the plugin ABI may still shift before 1.0. Pin your version in CI.</p>
       </div>
       <div class="faq__item">
-        <button class="faq__q">
+        <button class="faq__q" data-analytics="click_tools_differences">
           <span>How is it different from <code>po4a</code> or <code>translate-toolkit</code>?</span>
           <span class="faq__plus"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 3v10M3 8h10"/></svg></span>
         </button>
         <p class="faq__a">Those are excellent and Zellig stands on their shoulders. The differences: a single static binary, first-class LLM and local-model backends, content-hash caching, and an interactive REPL. Pick whichever fits your team.</p>
       </div>
       <div class="faq__item">
-        <button class="faq__q">
+        <button class="faq__q" data-analytics="click_docker_run">
           <span>Can I run Zellig with Docker?</span>
           <span class="faq__plus"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 3v10M3 8h10"/></svg></span>
         </button>
@@ -540,7 +540,7 @@ $ zellig translate --dir ./locales \
         </p>
       </div>
       <div class="faq__item">
-        <button class="faq__q">
+        <button class="faq__q" data-analytics="click_glossaries">
           <span>What about glossaries and do-not-translate?</span>
           <span class="faq__plus"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 3v10M3 8h10"/></svg></span>
         </button>
@@ -570,37 +570,37 @@ $ zellig translate --dir ./locales \
       <div class="foot__col">
         <h4>Project</h4>
         <ul>
-          <li><a href="https://github.com/kodaskills/zellig" target="_blank" rel="noreferrer">GitHub</a></li>
-          <li><a href="https://github.com/Kodaskills/zellig/releases" target="_blank" rel="noreferrer">Releases</a></li>
-          <li><a href="https://github.com/Kodaskills/zellig/blob/main/CHANGELOG.md" target="_blank" rel="noreferrer">Changelog</a></li>
-          <li><a href="https://github.com/Kodaskills/zellig?tab=MIT-1-ov-file" target="_blank" rel="noreferrer">License (MIT)</a></li>
+          <li><a href="https://github.com/kodaskills/zellig" target="_blank" rel="noreferrer" data-analytics="click_github">GitHub</a></li>
+          <li><a href="https://github.com/Kodaskills/zellig/releases" target="_blank" rel="noreferrer" data-analytics="click_releases">Releases</a></li>
+          <li><a href="https://github.com/Kodaskills/zellig/blob/main/CHANGELOG.md" target="_blank" rel="noreferrer" data-analytics="click_changelog">Changelog</a></li>
+          <li><a href="https://github.com/Kodaskills/zellig?tab=MIT-1-ov-file" target="_blank" rel="noreferrer" data-analytics="click_license">License (MIT)</a></li>
         </ul>
       </div>
       <div class="foot__col">
         <h4>Docs</h4>
         <ul>
-          <li><a href="#install">Getting started</a></li>
-          <li><a href="#modes">CLI reference</a></li>
-          <li><a href="#backends">Backends</a></li>
-          <li><a href="#faq">Recipes</a></li>
+          <li><a href="#install" data-analytics="click_getting_started">Getting started</a></li>
+          <li><a href="#modes" data-analytics="click_cli_reference">CLI reference</a></li>
+          <li><a href="#backends" data-analytics="click_backends_footer">Backends</a></li>
+          <li><a href="#faq" data-analytics="click_recipes">Recipes</a></li>
         </ul>
       </div>
       <div class="foot__col">
         <h4>Community</h4>
         <ul>
-          <li><a href="https://github.com/Kodaskills/zellig/discussions" target="_blank" rel="noreferrer">Discussions</a></li>
-          <li><a href="https://github.com/sponsors/Kodaskills" target="_blank" rel="noreferrer">Sponsor 🩷</a></li>
-          <li><a href="https://github.com/Kodaskills/zellig/tree/main?tab=contributing-ov-file#contributing-to-zellig" target="_blank" rel="noreferrer">Contributing</a></li>
+          <li><a href="https://github.com/Kodaskills/zellig/discussions" target="_blank" rel="noreferrer" data-analytics="click_discussions">Discussions</a></li>
+          <li><a href="https://github.com/sponsors/Kodaskills" target="_blank" rel="noreferrer" data-analytics="click_sponsor">Sponsor 🩷</a></li>
+          <li><a href="https://github.com/Kodaskills/zellig/tree/main?tab=contributing-ov-file#contributing-to-zellig" target="_blank" rel="noreferrer" data-analytics="click_contributing">Contributing</a></li>
         </ul>
       </div>
     </div>
     <div class="foot__bot">
-      <span>© 2026 <a href="https://kodaskills.co" target="_blank" rel="noreferrer">Kodaskills</a> · MIT</span>
+      <span>© 2026 <a href="https://kodaskills.co" target="_blank" rel="noreferrer" data-analytics="click_kodaskills_copyright">Kodaskills</a> · MIT</span>
       <div class="foot__badges">
-        <a href="https://crates.io/crates/zellig" target="_blank" rel="noreferrer">
+        <a href="https://crates.io/crates/zellig" target="_blank" rel="noreferrer" data-analytics="click_crates_io">
           <img src="https://img.shields.io/crates/v/zellig?style=for-the-badge&logo=rust&color=orange" alt="Crates.io">
         </a>
-        <a href="https://github.com/Kodaskills/zellig?tab=MIT-1-ov-file" target="_blank" rel="noreferrer">
+        <a href="https://github.com/Kodaskills/zellig?tab=MIT-1-ov-file" target="_blank" rel="noreferrer" data-analytics="click_license">
           <img src="https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge" alt="License">
         </a>
       </div>
@@ -610,5 +610,6 @@ $ zellig translate --dir ./locales \
 
 
 <script src="main.js" defer></script>
+<script src="analytics.js" defer></script>
 </body>
 </html>
