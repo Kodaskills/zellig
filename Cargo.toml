@@ -27,7 +27,7 @@ reqwest = { version = "0.13", features = ["json", "form"] }
 toml = "1"
 toml_edit = "0.22"
 serde_yaml = "0.9"
-quick-xml = "0.40"
+quick-xml = "0.41"
 ratatui = "0.30"
 indicatif = "0.18"
 
